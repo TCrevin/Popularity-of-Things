@@ -38,13 +38,13 @@ class Fetch:
         tweets_response = requests.request("GET", url, headers=self.headers, data=self.payload)
         tweets_response_text = json.loads(tweets_response.text)
         for tweet in tweets_response_text['data']:
-            print(tweet['text'])  # TODO: Return as variable, append to file -Toni 6.10.2021
+            print(tweet['text'],"\n\n\n")  # TODO: Return as variable, append to file -Toni 6.10.2021
 
     def getCount(self):
         url = "https://api.twitter.com/2/tweets/counts/recent?query=%23{}".format(self.query)
         count_response = requests.request("GET", url, headers=self.headers, data=self.payload)
         count_response_text = json.loads(count_response.text)
-        print("How many tweets with #{} as the query: {}".format(
+        print("How many tweets with #{} as the query: {}\n\n\n".format(
             self.query,
             count_response_text['meta']['total_tweet_count']))  # TODO: Append to file -Toni 6.10.2021
 
@@ -65,7 +65,7 @@ def errorMsg():
 
 def main():
     mode_list = ['1', '2', 'X', 'x']
-    print("Welcome.")
+    print("Welcome.\n\n")
     while True:
 
         try:
@@ -75,8 +75,8 @@ def main():
                 print("Exiting program")
                 quit()
             fetch = Fetch(query)
-            mode = input("1 : Get tweets related to {0} from last 7 days\n"
-                         "2 : Get the count of tweets related to {0}\n"
+            mode = input("1 : Get tweets related to {0} from last 7 days\n\n"
+                         "2 : Get the count of tweets related to {0}\n\n"
                          "[1/2?]: ".format(query))
 
             if mode == '1':
