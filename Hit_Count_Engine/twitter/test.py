@@ -83,7 +83,7 @@ def main():
                 fetch.getTweets()
             if mode == '2':
                 fetch.getCount()
-            if mode == 'X':
+            if mode == 'X' or 'x':
                 print("Exiting program")
                 quit()
             if mode not in mode_list:
