@@ -12,25 +12,25 @@ class Search:
         if pages < 1 or pages > 10:
             print("Incorrect pages count!")
             return
-        for page in range(pages):
+        for page in range(1,pages+1):
             start = 10 * (page-1) + 1 # Actual starting index / First item in page
             url = f"https://www.googleapis.com/customsearch/v1?key={self.key}&cx={self.cx}&start={start}&q={self.query}"
             response = json.loads(requests.request("GET", url).text)
             if 'items' in response:
-                # FIXME: works when executed in ipython, here KeyError: 'items'
                 self.items[str(page)] = response['items']
             else:
                 print('oh no :(')
+        return response
 
 
 def main():
     query = input("Search query >")
     custom = Search(query)
-    custom.getItems(1)
-    pages = [page for page in custom.items]
-    # TODO: testing
-    for page in pages:
-        links = [item['displayLink'] for item in page]
+    custom.getItems()
+    links = []
+    #print(custom.items)
+    for page in custom.items:
+        links.extend([item['displayLink'] for item in custom.items[page]])
     print(links)
 
 
