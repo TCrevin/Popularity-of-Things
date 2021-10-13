@@ -26,7 +26,8 @@ class Fetch:
             cptTotal += submission.selftext.count(self.query)
             #query counting in SUB COMMENTS
             for comment in submission.comments:
-                cptTotal += comment.body.count(self.query)
+                if not(isinstance(comment, MoreComments)):
+                    cptTotal += comment.body.count(self.query)
             
             if self.query in submission.title:
                 cptSub+=1
