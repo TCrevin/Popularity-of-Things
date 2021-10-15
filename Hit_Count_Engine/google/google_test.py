@@ -11,8 +11,8 @@ class Fetch:
         :param query: search term for custom search
         """
         self.query = query
-        self.key = config["google_api"]["key"]
-        self.cx = config["google_api"]["cx"]
+        self.key = "AIzaSyBDCfGzExKZN_hLv1XYCuB4K_iZWdvpfR0"
+        self.cx = "a400502691c2c4c3c"
         self.items = {}
 
     def getItems(self, pages=1):
@@ -70,11 +70,8 @@ def main():
         # print(custom.items)
         for page in custom.items:
             links.update([item["displayLink"] for item in custom.items[page]])
-        print(
-            "\nUnique links:\n\
-------------------------\n",
-            links,
-        )
+        print("\nUnique links:\n" + "------------------------")
+        print(links)
         print("\n\nGive a search term or 'exit' to stop the program.")
     print("Bye.")
 
