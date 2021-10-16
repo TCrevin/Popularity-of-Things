@@ -14,7 +14,7 @@ pytrend_all = TrendReq()
 # timeframe 'today #-m' == from last # months, # can be 1, 3, 12 months
 
 # pytrend_all.build_payload(kw_list=["puma", "nike", "adidas"], cat="697", timeframe="now 1-H")
-pytrend_all.build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="now 12-m")
+pytrend_all.build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="today 3-m")
 # pytrend_normal.build_payload(kw_list=["volatility"], cat="7", timeframe="today 12-m")
 # pytrend_compsec.build_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
 
@@ -29,7 +29,7 @@ int_all_df = pytrend_all.interest_over_time()
 # )
 
 # print(joined)
-# print(int_all_df.tail())
-summa = int_all_df.sum(numeric_only=True)
+print(int_all_df.head())
+summa = int_all_df.sum(numeric_only=True)  # TODO: calculate average (values between 0 and 100)
 print(summa)
 print(summa.idxmax())
