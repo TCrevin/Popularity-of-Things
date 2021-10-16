@@ -14,7 +14,7 @@ pytrend_all = TrendReq()
 # timeframe 'today #-m' == from last # months, # can be 1, 3, 12 months
 
 # pytrend_all.build_payload(kw_list=["puma", "nike", "adidas"], cat="697", timeframe="now 1-H")
-pytrend_all.build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="now 1-H")
+pytrend_all.build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="now 12-m")
 # pytrend_normal.build_payload(kw_list=["volatility"], cat="7", timeframe="today 12-m")
 # pytrend_compsec.build_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
 
