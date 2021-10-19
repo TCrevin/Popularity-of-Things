@@ -65,14 +65,14 @@ class Fetch:
                     
         return totalScore
     
-def comparePopularity(query1, query2, subreddit="all"):
+'''def comparePopularity(score1, query2, subreddit="all"):
     fetch1 = Fetch(query1, subreddit)
     fetch2 = Fetch(query2, subreddit)
     
     score1 = fetch1.getPopularityScore()
     score2 = fetch2.getPopularityScore()
     
-    return score1 - score2
+    return score1 - score2'''
 
 def main():
     print("Welcome.\n\n")
