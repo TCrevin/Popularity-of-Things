@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import requests
+import json
+import ast
+import subprocess
+import os
 
 import praw
 from praw.models import MoreComments
@@ -15,8 +20,21 @@ class Fetch:
         self.query = query
         self.subReddit = subReddit
         self.submissions = reddit.subreddit(subReddit).search(query)
-            
-    def getCount(self):
+        
+        self.resultsDir = os.getcwd()
+        
+    def getResultsDir(self):
+        directory = self.resultsDir + "/results"
+        return directory
+    
+    def listResultsDir(self):
+        """List contents of directory where .json files are located"""
+        process = subprocess.Popen(['ls', self.getResultsDir()], stdout=subprocess.PIPE)
+        return process.communicate()[0].decode('utf-8')
+    
+    
+    '''def getCount(self):
+        """Get the occurence counting of the query"""
         cptTotal=0
         cptSub=0
         
@@ -41,11 +59,14 @@ class Fetch:
 
         print("How times the query #{} has been find in total: {}\n\n\n".format(
             self.query,
-            cptTotal))
+            cptTotal))'''
+
         
-    def getPopularityScore(self):
+    def getPopularityScore(self, limit=10):
+        """Calculate popularity score of the query"""
         totalScore=0
         
+        i=0
         for submission in self.submissions:
             #query upvotes count
             subPopularity = submission.score
@@ -63,47 +84,118 @@ class Fetch:
                 if not(isinstance(comment, MoreComments)):
                     totalScore += comment.body.count(self.query)*comment.score
                     
-        return totalScore
+            if i>=10:
+                break
+            i+=1
+                 
+        print("Popularity of " + self.query + " : " + str(totalScore))
+        return totalScore 
+        #totalScore = 
+        #    sub_upvotes*(title_query_occurence + sub_text_query_occurence) 
+        #  + sum(comment(i)_score*(comment_query_occurence))
     
-'''def comparePopularity(score1, query2, subreddit="all"):
-    fetch1 = Fetch(query1, subreddit)
-    fetch2 = Fetch(query2, subreddit)
     
-    score1 = fetch1.getPopularityScore()
-    score2 = fetch2.getPopularityScore()
     
-    return score1 - score2'''
+    def appendCount(self, input_dict):
+        """
+        Append the input dictionary of queries with results. Returned dictionary of query results is reverse
+        sorted (high-to-low)
+        Built in sorted() absolutely the fastest way https://medium.com/@tuvo1106/how-fast-can-you-sort-9f75d27cf9c1
+        """
+        output_dict = dict()
+        query = str(self.query)
+        value = str(self.getPopularityScore())
+        input_dict.update({query: value})
+        sort_dict = sorted(input_dict.items(), key=lambda x: int(x[1]), reverse=True)
+        for v, k in sort_dict:
+            output_dict[v] = k
+        return output_dict
+
+    def readResults(self, filename):
+        """Open and read file. File must be closed separately if writeResults() is not called"""
+        try:
+            file = open(filename)
+            data = json.load(file)
+            ding = data.replace("queries: ", '')
+            return ding
+        except FileNotFoundError:
+            self.readResults(filename)
+
+    def clearResults(self, file):
+        """
+        Clear file contents. Input file must be opened before calling method.
+        """
+        try:
+            file.truncate(0)
+        except FileNotFoundError:
+            print("File not found, please recheck input.\n\n")
+            self.clearResults(file)
+        except:
+            print("An unknown error occurred")
+
+    def writeResults(self, file, output_dict):
+        file.write(str(output_dict))
+        file.close()
+    
+            
+    
 
 def main():
     print("Welcome.\n\n")
+    #Main loop
     while(True):
-        query = input("Enter a query, 'stop' if you want to stop : ")
-        if query=='stop':
-            break
-        
-        subRBool = input("Do you want to look at a precise subreddit ? (y/n)")
-        if subRBool=='y':
-            subReddit = input("What subreddit do you want to browse : ")
-            fetch = Fetch(query, subReddit)
-        else:
-            fetch = Fetch(query)
+        try:
+            #Getting the query
+            query = input("Enter a query, 'stop' if you want to stop : ")
             
-        score1=fetch.getPopularityScore()
-        print("Total popularity score of " + str(query) + " : " + str(score1))
-        
-        comparBool = input("Do you want to compare the query " + str(query) + " to another one ? (y/n)")
-        if comparBool=='y':
-            query2 = input("What query ? ")
-            fetch2 = Fetch(query2)
-            score2 = fetch2.getPopularityScore()
-            compare = score1 - score2
-            if compare > 0:
-                print(str(query) + " is more popular " + str(query2) + " by " + str(compare))
-            elif compare < 0:
-                 print(str(query2) + " is more popular " + str(query) + " by " + str(abs(compare)))
-            else:
-                print(str(query2) + " and " + str(query) + " are equally popular")
-
+            #Stop the loop
+            if query=='stop':
+                print('Loop terminated')
+                break
+            
+            #Looking for a subreddit
+            subRBool = input("Do you want to look at a precise subreddit ? (y/n)")
+            if subRBool=='y':
+                subReddit = input("What subreddit do you want to browse : ")
+                fetch = Fetch(query, subReddit)
+            elif subRBool=='n':
+                fetch = Fetch(query)
+                
+            #Getting the query score
+            #score1=fetch.getPopularityScore()
+            #print("Total popularity score of " + str(query) + " : " + str(score1))
+            
+            iofile = fetch.readResults("results/results.json")
+            input_file = ast.literal_eval(iofile)
+            file = open("results/results.json", "r+")
+            output_dict = fetch.appendCount(input_file)
+            output_json = json.dumps("queries: " + str(output_dict))
+            fetch.writeResults(file, output_json)
+            print("Completed fetch")
+            
+            #Compare to another query
+            '''comparBool = input("Do you want to compare the query " + str(query) + " to another one ? (y/n)")
+            if comparBool=='y':
+                #Getting the other query and its popularity
+                query2 = input("What query ? ")
+                fetch2 = Fetch(query2)
+                score2 = fetch2.getPopularityScore()
+                compare = score1 - score2
+                if compare > 0:
+                    print(str(query) + " is more popular " + str(query2) + " by " + str(compare))
+                elif compare < 0:
+                     print(str(query2) + " is more popular " + str(query) + " by " + str(abs(compare)))
+                else:
+                    print(str(query2) + " and " + str(query) + " are equally popular")'''
+                    
+                    
+        except UnboundLocalError:
+            print("Wrong input, please retry")
+        except KeyboardInterrupt:
+            print("Program interrupted")
+            break
+            
+    print('Goodbye !')
 
 if __name__ == "__main__":
     main()
