@@ -13,13 +13,13 @@ reddit = praw.Reddit(client_id="9aC2iDzQQi04w-q1cPmjUw",
                                   user_agent="NLP_Project_API/0.0.1",
                                 )
 class Fetch:
-    def __init__(self, query, subReddit='all'):
+    def __init__(self, query, subReddit='all', timestamp='all'):
         """
         :param query: defined search term for tweets tagged with #query
         """
         self.query = query
         self.subReddit = subReddit
-        self.submissions = reddit.subreddit(subReddit).search(query)
+        self.submissions = reddit.subreddit(subReddit).search(query, time_filter=timestamp)
         
         self.resultsDir = os.getcwd()
         
@@ -153,11 +153,15 @@ def main():
                 print('Loop terminated')
                 break
             
+            #Getting a timestamp
+            #timestamp = 'all'
+            timestamp = input("Please choos a timestamp : 'hour', 'day', 'week', 'month', 'year', 'all' ")
+            
             #Looking for a subreddit
             subRBool = input("Do you want to look at a precise subreddit ? (y/n)")
             if subRBool=='y':
                 subReddit = input("What subreddit do you want to browse : ")
-                fetch = Fetch(query, subReddit)
+                fetch = Fetch(query, subReddit, timestamp)
             elif subRBool=='n':
                 fetch = Fetch(query)
                 
