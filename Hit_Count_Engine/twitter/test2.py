@@ -2,6 +2,8 @@ import requests
 import json
 import ast
 import subprocess
+import time
+import collections
 
 """
 Twitter API calls.
@@ -66,30 +68,101 @@ class Fetch:
         count_response_text = json.loads(count_response.text)
         return self.query, count_response_text['meta']['total_tweet_count']  # Return count [0] and related query [1]
 
-    def appendCount(self, input_dict):
+    def __checkTimestamp(self, input_dict):
+        print("DEBUG: Calling checkTimestamp()")
+        outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
+        old_timestamp = int(outdict[0][1]["timestamp"])
+        new_timestamp = int(time.time())
+        if old_timestamp - new_timestamp > 604800:
+            return True
+        else:
+            return False
+
+    def __exists(self, input_dict, *keys):
+        print("DEBUG: Calling __exists()")
+        if not isinstance(input_dict, dict):
+            raise AttributeError("Expected dict as first argument")
+        if len(keys) == 0:
+            raise AttributeError("Expected at least two arguments")
+        _input_dict= input_dict
+        for key in keys:
+            try:
+                _input_dict = _input_dict[key]
+            except KeyError:
+                print("Query not in input_dict")
+                return False
+        print("Query in input_dict")
+        return True
+
+    def __sortDict(self, input_dict):
+        print("DEBUG: Calling sortDict(): ", input_dict)
+        outfile = sorted(input_dict.items(), key=lambda key_value: key_value[1]['count']) # sort
+        return outfile
+
+    def __addQuery(self, input_dict, query, value):
+        print("DEBUG: Calling addQuery")
+        #query = str(self.getCount()[0])
+        #value = str(self.getCount()[1])
+        timestamp = time.time()
+        outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
+        outdict[0][1] = query
+        outdict[0][1]["count"] = value
+        outdict[0][1]["timestamp"] = timestamp
+        return dict(outdict)
+
+    def build(self, input_dict): # TODO: Test.
+        print("Calling build")
+        query = str(self.getCount()[0])
+        value = str(self.getCount()[1])
+        if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict):
+            input_dict = self.__addQuery(input_dict, query, value)
+            input_dict = self.__sortDict(input_dict)
+            return input_dict
+        elif self.__exists(input_dict, query) and not self.__checkTimestamp(input_dict):
+            print("Query exists but it's not 7 days old yet.") # TODO: Return remaining time and print.
+        elif not self.__exists(input_dict, query):
+            input_dict = self.__addQuery(input_dict, query, value)
+            return input_dict
+
+
+    def appendCount(self, input_dict): # TODO: This method does too many things. Refactor and remove. -Toni
         """
         Append the input dictionary of queries with results. Returned dictionary of query results is reverse
         sorted (high-to-low)
-        Built in sorted() absolutely the fastest way https://medium.com/@tuvo1106/how-fast-can-you-sort-9f75d27cf9c1
+        Built-in sorted() absolutely the fastest way https://medium.com/@tuvo1106/how-fast-can-you-sort-9f75d27cf9c1
         """
+        print("This is input dict: ", input_dict)
         output_dict = dict()
+        nu_stamp = time.time()
         query = str(self.getCount()[0])
         value = str(self.getCount()[1])
-        input_dict.update({query: value})
-        sort_dict = sorted(input_dict.items(), key=lambda x: int(x[1]), reverse=True)
-        for v, k in sort_dict:
-            output_dict[v] = k
-        return output_dict
+        if query in input_dict.keys():
+            print("DEBUG: Found query in queries!")
+            old_stamp = int(input_dict[query]["timestamp"])
+            if nu_stamp-old_stamp>604800: # older than a week, update
+                input_dict.update({query: {"count":value, "timestamp":nu_stamp}})
+                sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+                for v, k in sort_dict:
+                    output_dict[v] = k
+                return output_dict
+        else:
+            print("Query not in queries, resuming with updating table....")
+            input_dict.update({query: {"count": value, "timestamp": nu_stamp}})
+            sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+            for v, k in sort_dict:
+                output_dict[v] = k
+                return output_dict
 
     def readResults(self, filename):
         """Open and read file. File must be closed separately if writeResults() is not called"""
         try:
             file = open(filename)
             data = json.load(file)
-            ding = data.replace("queries: ", '')
-            return ding
+            #ding = data.replace("queries: ", '')
+            return data
         except FileNotFoundError:
-            self.readResults(filename)
+            self.readResults(filename) # User rechecks input
+
 
     def clearResults(self, file):
         """
@@ -141,9 +214,9 @@ def main():
                 fetch.getTweets()
             if mode == '2':  # TODO: Implement timestamp so if timestampAge > 7 days: clear entry -Toni 18.10
                 # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
-                iofile = fetch.readResults("results/results.json")
-                input_file = ast.literal_eval(iofile)
-                file = open("results/results.json", "r+")
+                infile = fetch.readResults("results/results2.json")
+                input_file = ast.literal_eval(infile)
+                file = open("results/results2.json", "r+")
                 output_dict = fetch.appendCount(input_file)
                 output_json = json.dumps("queries: " + str(output_dict))
                 fetch.writeResults(file, output_json)
