@@ -99,18 +99,21 @@ class Fetch:
         outfile = sorted(input_dict.items(), key=lambda key_value: key_value[1]['count']) # sort
         return outfile
 
-    def __addQuery(self, input_dict, query, value):
+    def __addQuery(self, input_dict, query, value): # TODO: See below
+        print("DEBUG Type of input_dict", type(input_dict))
         print("DEBUG: Calling addQuery")
         #query = str(self.getCount()[0])
         #value = str(self.getCount()[1])
         timestamp = time.time()
-        outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
-        outdict[0][1] = query
-        outdict[0][1]["count"] = value
+        outdict = collections.defaultdict(dict, input_dict)
+        print("DEBUG: Outdict: ", outdict)
+        outdict[0][1] = str(query)
+        outdict[0][1]["count"] = value # TODO: Assignment not working correctly
         outdict[0][1]["timestamp"] = timestamp
         return dict(outdict)
 
-    def build(self, input_dict): # TODO: Test.
+    def build(self, input_dict):
+        print("DEBUG Type of input_dict", type(input_dict))
         print("Calling build")
         query = str(self.getCount()[0])
         value = str(self.getCount()[1])
@@ -215,10 +218,10 @@ def main():
             if mode == '2':  # TODO: Implement timestamp so if timestampAge > 7 days: clear entry -Toni 18.10
                 # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
                 infile = fetch.readResults("results/results2.json")
-                input_file = ast.literal_eval(infile)
+                input_file = ast.literal_eval(str(infile))
                 file = open("results/results2.json", "r+")
-                output_dict = fetch.appendCount(input_file)
-                output_json = json.dumps("queries: " + str(output_dict))
+                output_dict = fetch.build(input_file)
+                output_json = json.dumps(output_dict)
                 fetch.writeResults(file, output_json)
                 print("Completed fetch")
             if mode == 'X' or 'x':
