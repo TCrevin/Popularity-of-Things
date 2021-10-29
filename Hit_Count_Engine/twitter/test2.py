@@ -4,7 +4,7 @@ import ast
 import subprocess
 import time
 import collections
-
+from functools import reduce
 """
 Twitter API calls.
 Maximum amount of Tweets to retrieve is limited to 100 per query.
@@ -68,63 +68,78 @@ class Fetch:
         count_response_text = json.loads(count_response.text)
         return self.query, count_response_text['meta']['total_tweet_count']  # Return count [0] and related query [1]
 
-    def __checkTimestamp(self, input_dict):
+    def __checkTimestamp(self, input_dict, query):
         print("DEBUG: Calling checkTimestamp()")
-        outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
-        old_timestamp = int(outdict[0][1]["timestamp"])
+        #outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
+        val = input_dict.get(query, {}).get('timestamp', {})
+        print("DEBUG Val: ", val)
+        old_timestamp = int(val)
         new_timestamp = int(time.time())
         if old_timestamp - new_timestamp > 604800:
             return True
         else:
             return False
 
-    def __exists(self, input_dict, *keys):
-        print("DEBUG: Calling __exists()")
-        if not isinstance(input_dict, dict):
-            raise AttributeError("Expected dict as first argument")
-        if len(keys) == 0:
-            raise AttributeError("Expected at least two arguments")
-        _input_dict= input_dict
-        for key in keys:
-            try:
-                _input_dict = _input_dict[key]
-            except KeyError:
-                print("Query not in input_dict")
-                return False
-        print("Query in input_dict")
-        return True
+    def __exists(self, input_dict, query):
+        print("DEBUG: ", query)
+        get_query = input_dict.get("queries").get(query, "")
+        print("DEBUG: __exists", get_query)
+        if get_query:
+            print("Query in dict")
+        else:
+            print("Query not in dict")
 
     def __sortDict(self, input_dict):
         print("DEBUG: Calling sortDict(): ", input_dict)
         outfile = sorted(input_dict.items(), key=lambda key_value: key_value[1]['count']) # sort
         return outfile
 
-    def __addQuery(self, input_dict, query, value): # TODO: See below
+    def deepUpdate(self, input_dict, output_dict):
+        for key, val in output_dict.items():
+            if isinstance(val, collections.Mapping):
+                tmp = self.deepUpdate(input_dict.get(key, []), val)
+                input_dict[key] = tmp
+            elif isinstance(val, list):
+                input_dict[key] = (input_dict.get(key, []) + val)
+            else:
+                input_dict[key] = output_dict[key]
+        return input_dict
+
+    def __updateQuery(self, input_dict, query, value): # TODO: See below
         print("DEBUG Type of input_dict", type(input_dict))
         print("DEBUG: Calling addQuery")
         #query = str(self.getCount()[0])
         #value = str(self.getCount()[1])
+        print("QUERY: ", type(query))
         timestamp = time.time()
-        outdict = collections.defaultdict(dict, input_dict)
-        print("DEBUG: Outdict: ", outdict)
-        outdict[0][1] = str(query)
-        outdict[0][1]["count"] = value # TODO: Assignment not working correctly
-        outdict[0][1]["timestamp"] = timestamp
-        return dict(outdict)
+        #outdict = collections.defaultdict(dict, input_dict)
+        print("DEBUG: input_dict: ", input_dict)
+        input_dict['queries'][query][0]['count'] = value
+        input_dict['queries'][query][0]['timestamp'] = time.time()
+        print("DEBUG: DLC2: ", value)
+        dlc = input_dict.get("queries").get(query, "")
+        query_list = dict(dlc[0])['count']
+        print("DEBUG updated outdict: ", input_dict)
+        #outdict[0][1]["count"] = value # TODO: Assignment not working correctly
+        #outdict[0][1]["timestamp"] = timestamp
+        return input_dict
+
+    #def __addQuery(self, input_dict, query, value):
+
 
     def build(self, input_dict):
         print("DEBUG Type of input_dict", type(input_dict))
         print("Calling build")
         query = str(self.getCount()[0])
         value = str(self.getCount()[1])
-        if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict):
-            input_dict = self.__addQuery(input_dict, query, value)
+        if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
+            input_dict = self.__updateQuery(input_dict, query, value)
             input_dict = self.__sortDict(input_dict)
             return input_dict
-        elif self.__exists(input_dict, query) and not self.__checkTimestamp(input_dict):
+        elif self.__exists(input_dict, query) and not self.__checkTimestamp(input_dict, query):
             print("Query exists but it's not 7 days old yet.") # TODO: Return remaining time and print.
         elif not self.__exists(input_dict, query):
-            input_dict = self.__addQuery(input_dict, query, value)
+            input_dict = self.__updateQuery(input_dict, query, value)
             return input_dict
 
 
@@ -199,6 +214,7 @@ def errorMsg():
 
 
 def main():
+    global input_file
     mode_list = ['1', '2', 'X', 'x']
     print("Welcome.\n\n")
     while True:
@@ -216,14 +232,19 @@ def main():
             if mode == '1':
                 fetch.getTweets()
             if mode == '2':  # TODO: Implement timestamp so if timestampAge > 7 days: clear entry -Toni 18.10
-                # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
-                infile = fetch.readResults("results/results2.json")
-                input_file = ast.literal_eval(str(infile))
-                file = open("results/results2.json", "r+")
-                output_dict = fetch.build(input_file)
-                output_json = json.dumps(output_dict)
-                fetch.writeResults(file, output_json)
-                print("Completed fetch")
+                try:
+                    # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
+                    infile = fetch.readResults("results/results2.json")
+                    input_file = ast.literal_eval(str(infile))
+                    file = open("results/results2.json", "r+")
+                    output_dict = fetch.build(input_file)
+                    output_json = json.dumps(output_dict)
+                    #fetch.writeResults(file, output_json)
+                    print("Completed fetch")
+                except KeyError:
+                    output_dict = {'queries': {fetch.getCount()[0]: [{'count': fetch.getCount()[1], 'timestamp':time.time()}]}}
+                    test = fetch.deepUpdate(input_dict=input_file, output_dict=output_dict)
+                    print("Test dict: ", test)
             if mode == 'X' or 'x':
                 print("Exiting program")
                 quit()
