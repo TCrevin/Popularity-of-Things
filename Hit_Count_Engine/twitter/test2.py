@@ -194,7 +194,7 @@ class Fetch:
         except:
             print("An unknown error occurred")
 
-    def writeResults(self, file, output_dict):
+    def writeResults(self, file, output_dict): # TODO: Fixme:
         file.write(str(output_dict))
         file.close()
 
@@ -231,7 +231,7 @@ def main():
 
             if mode == '1':
                 fetch.getTweets()
-            if mode == '2':  # TODO: Implement timestamp so if timestampAge > 7 days: clear entry -Toni 18.10
+            if mode == '2':  # TODO: Clear, write updated dict
                 try:
                     # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
                     infile = fetch.readResults("results/results2.json")
@@ -242,7 +242,9 @@ def main():
                     #fetch.writeResults(file, output_json)
                     print("Completed fetch")
                 except KeyError:
-                    output_dict = {'queries': {fetch.getCount()[0]: [{'count': fetch.getCount()[1], 'timestamp':time.time()}]}}
+                    output_dict = {'queries': {fetch.getCount()[0]:
+                                                   [{'count': fetch.getCount()[1],
+                                                     'timestamp':time.time()}]}}
                     test = fetch.deepUpdate(input_dict=input_file, output_dict=output_dict)
                     print("Test dict: ", test)
             if mode == 'X' or 'x':
