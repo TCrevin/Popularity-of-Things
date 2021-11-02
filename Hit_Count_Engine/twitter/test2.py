@@ -2,7 +2,9 @@ import requests
 import json
 import ast
 import subprocess
-
+import time
+import collections
+from functools import reduce
 """
 Twitter API calls.
 Maximum amount of Tweets to retrieve is limited to 100 per query.
@@ -66,30 +68,119 @@ class Fetch:
         count_response_text = json.loads(count_response.text)
         return self.query, count_response_text['meta']['total_tweet_count']  # Return count [0] and related query [1]
 
-    def appendCount(self, input_dict):
+    def __checkTimestamp(self, input_dict, query):
+        print("DEBUG: Calling checkTimestamp()")
+        #outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
+        val = input_dict.get(query, {}).get('timestamp', {})
+        print("DEBUG Val: ", val)
+        old_timestamp = int(val)
+        new_timestamp = int(time.time())
+        if old_timestamp - new_timestamp > 604800:
+            return True
+        else:
+            return False
+
+    def __exists(self, input_dict, query):
+        print("DEBUG: ", query)
+        get_query = input_dict.get("queries").get(query, "")
+        print("DEBUG: __exists", get_query)
+        if get_query:
+            print("Query in dict")
+        else:
+            print("Query not in dict")
+
+    def __sortDict(self, input_dict):
+        print("DEBUG: Calling sortDict(): ", input_dict)
+        outfile = sorted(input_dict.items(), key=lambda key_value: key_value[1]['count']) # sort
+        return outfile
+
+    def deepUpdate(self, input_dict, output_dict):
+        for key, val in output_dict.items():
+            if isinstance(val, collections.Mapping):
+                tmp = self.deepUpdate(input_dict.get(key, []), val)
+                input_dict[key] = tmp
+            elif isinstance(val, list):
+                input_dict[key] = (input_dict.get(key, []) + val)
+            else:
+                input_dict[key] = output_dict[key]
+        return input_dict
+
+    def __updateQuery(self, input_dict, query, value): # TODO: See below
+        print("DEBUG Type of input_dict", type(input_dict))
+        print("DEBUG: Calling addQuery")
+        #query = str(self.getCount()[0])
+        #value = str(self.getCount()[1])
+        print("QUERY: ", type(query))
+        timestamp = time.time()
+        #outdict = collections.defaultdict(dict, input_dict)
+        print("DEBUG: input_dict: ", input_dict)
+        input_dict['queries'][query][0]['count'] = value
+        input_dict['queries'][query][0]['timestamp'] = time.time()
+        print("DEBUG: DLC2: ", value)
+        dlc = input_dict.get("queries").get(query, "")
+        query_list = dict(dlc[0])['count']
+        print("DEBUG updated outdict: ", input_dict)
+        #outdict[0][1]["count"] = value # TODO: Assignment not working correctly
+        #outdict[0][1]["timestamp"] = timestamp
+        return input_dict
+
+    #def __addQuery(self, input_dict, query, value):
+
+
+    def build(self, input_dict):
+        print("DEBUG Type of input_dict", type(input_dict))
+        print("Calling build")
+        query = str(self.getCount()[0])
+        value = str(self.getCount()[1])
+        if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
+            input_dict = self.__updateQuery(input_dict, query, value)
+            input_dict = self.__sortDict(input_dict)
+            return input_dict
+        elif self.__exists(input_dict, query) and not self.__checkTimestamp(input_dict, query):
+            print("Query exists but it's not 7 days old yet.") # TODO: Return remaining time and print.
+        elif not self.__exists(input_dict, query):
+            input_dict = self.__updateQuery(input_dict, query, value)
+            return input_dict
+
+
+    def appendCount(self, input_dict): # TODO: This method does too many things. Refactor and remove. -Toni
         """
         Append the input dictionary of queries with results. Returned dictionary of query results is reverse
         sorted (high-to-low)
-        Built in sorted() absolutely the fastest way https://medium.com/@tuvo1106/how-fast-can-you-sort-9f75d27cf9c1
+        Built-in sorted() absolutely the fastest way https://medium.com/@tuvo1106/how-fast-can-you-sort-9f75d27cf9c1
         """
+        print("This is input dict: ", input_dict)
         output_dict = dict()
+        nu_stamp = time.time()
         query = str(self.getCount()[0])
         value = str(self.getCount()[1])
-        input_dict.update({query: value})
-        sort_dict = sorted(input_dict.items(), key=lambda x: int(x[1]), reverse=True)
-        for v, k in sort_dict:
-            output_dict[v] = k
-        return output_dict
+        if query in input_dict.keys():
+            print("DEBUG: Found query in queries!")
+            old_stamp = int(input_dict[query]["timestamp"])
+            if nu_stamp-old_stamp>604800: # older than a week, update
+                input_dict.update({query: {"count":value, "timestamp":nu_stamp}})
+                sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+                for v, k in sort_dict:
+                    output_dict[v] = k
+                return output_dict
+        else:
+            print("Query not in queries, resuming with updating table....")
+            input_dict.update({query: {"count": value, "timestamp": nu_stamp}})
+            sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+            for v, k in sort_dict:
+                output_dict[v] = k
+                return output_dict
 
     def readResults(self, filename):
         """Open and read file. File must be closed separately if writeResults() is not called"""
         try:
             file = open(filename)
             data = json.load(file)
-            ding = data.replace("queries: ", '')
-            return ding
+            #ding = data.replace("queries: ", '')
+            return data
         except FileNotFoundError:
-            self.readResults(filename)
+            self.readResults(filename) # User rechecks input
+
 
     def clearResults(self, file):
         """
@@ -103,7 +194,7 @@ class Fetch:
         except:
             print("An unknown error occurred")
 
-    def writeResults(self, file, output_dict):
+    def writeResults(self, file, output_dict): # TODO: Fixme:
         file.write(str(output_dict))
         file.close()
 
@@ -123,6 +214,7 @@ def errorMsg():
 
 
 def main():
+    global input_file
     mode_list = ['1', '2', 'X', 'x']
     print("Welcome.\n\n")
     while True:
@@ -139,15 +231,22 @@ def main():
 
             if mode == '1':
                 fetch.getTweets()
-            if mode == '2':  # TODO: Implement timestamp so if timestampAge > 7 days: clear entry -Toni 18.10
-                # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
-                iofile = fetch.readResults("results/results.json")
-                input_file = ast.literal_eval(iofile)
-                file = open("results/results.json", "r+")
-                output_dict = fetch.appendCount(input_file)
-                output_json = json.dumps("queries: " + str(output_dict))
-                fetch.writeResults(file, output_json)
-                print("Completed fetch")
+            if mode == '2':  # TODO: Clear, write updated dict
+                try:
+                    # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
+                    infile = fetch.readResults("results/results2.json")
+                    input_file = ast.literal_eval(str(infile))
+                    file = open("results/results2.json", "r+")
+                    output_dict = fetch.build(input_file)
+                    output_json = json.dumps(output_dict)
+                    #fetch.writeResults(file, output_json)
+                    print("Completed fetch")
+                except KeyError:
+                    output_dict = {'queries': {fetch.getCount()[0]:
+                                                   [{'count': fetch.getCount()[1],
+                                                     'timestamp':time.time()}]}}
+                    test = fetch.deepUpdate(input_dict=input_file, output_dict=output_dict)
+                    print("Test dict: ", test)
             if mode == 'X' or 'x':
                 print("Exiting program")
                 quit()
