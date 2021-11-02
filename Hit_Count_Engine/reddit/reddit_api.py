@@ -12,12 +12,22 @@ reddit = praw.Reddit(client_id="9aC2iDzQQi04w-q1cPmjUw",
                                   client_secret="O29M5Puueuew1y_rDYVuvUZLdKuF_w",
                                   user_agent="NLP_Project_API/0.0.1",
                                 )
+
+def translateQuery(query):
+        """Translate some character which are unreadable by reddit API"""
+        tr = {"+":"plus", "#":"sharp", "-":"minus"}
+        for k,v in tr:
+            if k in query:
+                query = query.replace(k,v)
+        return query
+    
 class Fetch:
+    
     def __init__(self, query, subReddit='all', timestamp='all'):
         """
         :param query: defined search term for tweets tagged with #query
         """
-        self.query = query
+        self.query = translateQuery(query)
         self.subReddit = subReddit
         self.submissions = reddit.subreddit(subReddit).search(query, time_filter=timestamp)
         
@@ -31,35 +41,6 @@ class Fetch:
         """List contents of directory where .json files are located"""
         process = subprocess.Popen(['ls', self.getResultsDir()], stdout=subprocess.PIPE)
         return process.communicate()[0].decode('utf-8')
-    
-    
-    '''def getCount(self):
-        """Get the occurence counting of the query"""
-        cptTotal=0
-        cptSub=0
-        
-        for submission in self.submissions:
-            #query counting in TITLE
-            cptTotal +=  submission.title.count(self.query)
-            #query counting in SUB TEXT
-            cptTotal += submission.selftext.count(self.query)
-            #query counting in SUB COMMENTS
-            for comment in submission.comments:
-                if not(isinstance(comment, MoreComments)):
-                    cptTotal += comment.body.count(self.query)
-            
-            if self.query in submission.title:
-                cptSub+=1
-            
-            
-        print("How many submissions in the subreddit {} with #{} as the query: {}\n\n\n".format(
-            self.subReddit,
-            self.query,
-            cptSub))
-
-        print("How times the query #{} has been find in total: {}\n\n\n".format(
-            self.query,
-            cptTotal))'''
 
         
     def getPopularityScore(self, limit=10):
@@ -139,6 +120,8 @@ class Fetch:
     
             
     
+    
+    
 
 def main():
     print("Welcome.\n\n")
@@ -175,22 +158,7 @@ def main():
             output_dict = fetch.appendCount(input_file)
             output_json = json.dumps("queries: " + str(output_dict))
             fetch.writeResults(file, output_json)
-            print("Completed fetch")
-            
-            #Compare to another query
-            '''comparBool = input("Do you want to compare the query " + str(query) + " to another one ? (y/n)")
-            if comparBool=='y':
-                #Getting the other query and its popularity
-                query2 = input("What query ? ")
-                fetch2 = Fetch(query2)
-                score2 = fetch2.getPopularityScore()
-                compare = score1 - score2
-                if compare > 0:
-                    print(str(query) + " is more popular " + str(query2) + " by " + str(compare))
-                elif compare < 0:
-                     print(str(query2) + " is more popular " + str(query) + " by " + str(abs(compare)))
-                else:
-                    print(str(query2) + " and " + str(query) + " are equally popular")'''
+            print("Completed fetch, query added to the JSON results file")
                     
                     
         except UnboundLocalError:
