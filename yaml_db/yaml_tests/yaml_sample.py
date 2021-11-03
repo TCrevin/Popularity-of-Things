@@ -1,0 +1,67 @@
+queries:
+   - programming_languages:
+        - A.NET
+        - A-0 System
+        - A+
+        - ABAP
+        - ABC
+        - ABC ALGOL
+        - ACC
+        - Accent
+        - Ace DASL
+        - Action!
+        - ActionScript
+        - Actor
+        - Ada
+        - Adenine
+        - AdvPL
+        - Agda
+        - Agilent VEE
+        - Agora
+        - AIMMS
+        - Aldor
+        - Alef
+        - ALF
+        - ALGOL
+        - ALGOL 58
+        - ALGOL 60
+        - ALGOL 68
+        - ALGOL W
+        - Alice
+        - Alma-0
+        - AmbientTalk
+        - AMOS
+        - AMPL
+        - Analitik
+        - AngelScript
+        - Apache Pig latin
+        - Apex
+        - APL
+        - AppleScript
+        - APT
+        - Arc
+        - ARexx
+        - Argus
+        - Assembly
+        - Autolt
+        - AutoLISP
+        - Averest
+        - AWK
+        - Axum
+        - B
+        - Babbage
+        - Ballerina
+        - Bash
+        - BASIC
+        - Batch
+        - bc
+        - BCPL
+        - BeanShell
+        - Bertrand
+        - BETA
+        - BLISS
+        - Blockly
+        - BlooP
+        - Boo
+        - Boomerang
+        - Bosque
