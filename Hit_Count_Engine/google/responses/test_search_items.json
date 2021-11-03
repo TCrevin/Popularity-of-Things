@@ -1,0 +1,446 @@
+{
+  "1": [
+    {
+      "kind": "customsearch#result",
+      "title": "Apple",
+      "htmlTitle": "<b>Apple</b>",
+      "link": "https://www.apple.com/",
+      "displayLink": "www.apple.com",
+      "snippet": "Discover the innovative world of Apple and shop everything iPhone, iPad, Apple Watch, Mac, and Apple TV, plus explore accessories, entertainment,\\xa0...",
+      "htmlSnippet": "Discover the innovative world of <b>Apple</b> and shop everything iPhone, iPad, <b>Apple</b> Watch, Mac, and <b>Apple</b> TV, plus explore accessories, entertainment,&nbsp;...",
+      "cacheId": "xEELJvdODswJ",
+      "formattedUrl": "https://www.apple.com/",
+      "htmlFormattedUrl": "https://www.<b>apple</b>.com/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgXcJwU0NpVPjkaoVVf3CH5Rq7fbrCOebWw9_T7OjaHIOPyyf8LeqtV4c",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "metatags": [
+          {
+            "analytics-s-bucket-1": "appleglobal,applestoreww",
+            "analytics-s-bucket-0": "appleglobal,applestoreww",
+            "og:image": "https://www.apple.com/ac/structured-data/images/open_graph_logo.png?202110042002",
+            "og:type": "website",
+            "og:site_name": "Apple",
+            "og:title": "Apple",
+            "ac-gn-store-key": "SFX9YPYY9PPXCU9KH",
+            "og:description": "Discover the innovative world of Apple and shop everything iPhone, iPad, Apple Watch, Mac, and Apple TV, plus explore accessories, entertainment, and expert device support.",
+            "analytics-s-channel": "homepage",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "og:locale": "en_US",
+            "og:url": "https://www.apple.com/",
+            "analytics-track": "Apple - Index/Tab",
+            "analytics-s-bucket-2": "appleglobal,applestoreww"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.apple.com/ac/structured-data/images/open_graph_logo.png?202110042002"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Official Apple Support",
+      "htmlTitle": "Official <b>Apple</b> Support",
+      "link": "https://support.apple.com/",
+      "displayLink": "support.apple.com",
+      "snippet": "Apple support is here to help. Learn more about popular topics and find resources that will help you with all of your Apple products.",
+      "htmlSnippet": "<b>Apple</b> support is here to help. Learn more about popular topics and find resources that will help you with all of your <b>Apple</b> products.",
+      "cacheId": "n8Ff-cRc6J0J",
+      "formattedUrl": "https://support.apple.com/",
+      "htmlFormattedUrl": "https://support.<b>apple</b>.com/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSvCUix_tQXsnvYecmCj7vXA-p-APtfZm0uLr4Tl_aQuugEgLHdvkWS4eU",
+            "width": "410",
+            "height": "123"
+          }
+        ],
+        "BreadcrumbList": [{}],
+        "metatags": [
+          {
+            "apple-itunes-app": "app-id=1130498044,affiliate-data=ct=support.home&pt=2003",
+            "ac-gn-store-key": "S2A49YFKJF2JAT22K",
+            "analytics:s-pagename": "acs::web::home::home::landing (en_US)",
+            "ac-gn-search-field[locale]": "en_US",
+            "ac-gn-search-input": "q",
+            "analytics:s-account": "appleglobal,applesupport",
+            "ac-gn-search-action": "https://support.apple.com/kb/index",
+            "analytics:s-pagetype": "home",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "ac-gn-search-field[src]": "globalnav_support",
+            "securematrixurl": "https://supportmetrics.apple.com/content/services/stats",
+            "ac-gn-search-field[type]": "organic",
+            "position": "1",
+            "analytics:s-channel": "www.us.support",
+            "ac-gn-search-field[page]": "search"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://support.apple.com/content/dam/edam/applecare/images/en_US/homepage/psp-hero-banner-homepage-welcome.image.large_2x.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "iPhone - Apple",
+      "htmlTitle": "iPhone - <b>Apple</b>",
+      "link": "https://www.apple.com/iphone/",
+      "displayLink": "www.apple.com",
+      "snippet": "T-Mobile/Sprint Special Trade in Deal: Buy an Apple iPhone 13 Series, or 12 series and trade in a qualifying device (iPhone X, XS, XS Max, XR, 11, 11 Pro, 11\\xa0...",
+      "htmlSnippet": "T-Mobile/Sprint Special Trade in Deal: Buy an <b>Apple</b> iPhone 13 Series, or 12 series and trade in a qualifying device (iPhone X, XS, XS Max, XR, 11, 11 Pro, 11&nbsp;...",
+      "cacheId": "JIjFa1byZv4J",
+      "formattedUrl": "https://www.apple.com/iphone/",
+      "htmlFormattedUrl": "https://www.<b>apple</b>.com/iphone/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZPzRTpqYnKmk8Qx5ispBKf6-DZNwqGvwELtORqQW5bMVdYBq1zk4h1HLo",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "BreadcrumbList": [{}],
+        "metatags": [
+          {
+            "analytics-s-bucket-1": "appleglobal,applestoreww",
+            "og:image": "https://www.apple.com/v/iphone/home/bb/images/meta/iphone__btp62hy2cbea_og.png?202110061627",
+            "analytics-s-bucket-0": "appleglobal,applestoreww",
+            "og:type": "website",
+            "twitter:card": "summary_large_image",
+            "og:site_name": "Apple",
+            "al:ios:app_name": "Apple Store",
+            "og:title": "iPhone",
+            "ac-gn-store-key": "SFX9YPYY9PPXCU9KH",
+            "al:ios:url": "https://www.apple.com/us/xc/iphone?cid=AOS_ASA",
+            "og:description": "Explore iPhone, the world’s most powerful personal device. Check out iPhone 13 Pro, iPhone 13 Pro Max, iPhone 13, iPhone 13 mini, and iPhone SE.",
+            "al:ios:app_store_id": "375380948",
+            "analytics-s-channel": "iphone.tab+other",
+            "twitter:site": "@Apple",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "og:locale": "en_US",
+            "position": "1",
+            "og:url": "https://www.apple.com/iphone/",
+            "analytics-track": "iphone - index/tab",
+            "analytics-s-bucket-2": "appleglobal,applestoreww"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.apple.com/v/iphone/home/bb/images/meta/iphone__btp62hy2cbea_og.png?202110061627"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Apple Developer",
+      "htmlTitle": "<b>Apple</b> Developer",
+      "link": "https://developer.apple.com/",
+      "displayLink": "developer.apple.com",
+      "snippet": "There's never been a better time to develop for Apple platforms.",
+      "htmlSnippet": "There&#39;s never been a better time to develop for <b>Apple</b> platforms.",
+      "cacheId": "4_qFJakwvtAJ",
+      "formattedUrl": "https://developer.apple.com/",
+      "htmlFormattedUrl": "https://developer.<b>apple</b>.com/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTJwnjQZNysaKGFoVFWjsmSuS_8qjwR_ZkEXwuJdx7qwg98cewBtwDeVo",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "metatags": [
+          {
+            "omni_page": "Apple Developer - (English)",
+            "og:image": "https://developer.apple.com/news/images/og/apple-developer-og.png",
+            "og:type": "website",
+            "twitter:card": "summary_large_image",
+            "twitter:title": "Apple Developer",
+            "og:site_name": "Apple Developer",
+            "twitter:url": "https://developer.apple.com/",
+            "author": "Apple Inc.",
+            "og:title": "Apple Developer",
+            "og:description": "There’s never been a better time to develop for Apple platforms.",
+            "twitter:image": "https://developer.apple.com/news/images/og/apple-developer-og-twitter.png",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "twitter:description": "There’s never been a better time to develop for Apple platforms.",
+            "og:locale": "en_US",
+            "og:url": "https://developer.apple.com/"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://developer.apple.com/news/images/og/apple-developer-og.png"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Watch - Apple",
+      "htmlTitle": "Watch - <b>Apple</b>",
+      "link": "https://www.apple.com/watch/",
+      "displayLink": "www.apple.com",
+      "snippet": "Apple Watch Series 6 · 44mm or 40mm case size · Always-On Retina display · GPS + Cellular · GPS · Blood Oxygen app · ECG app · High and low heart rate notifications.",
+      "htmlSnippet": "<b>Apple</b> Watch Series 6 &middot; 44mm or 40mm case size &middot; Always-On Retina display &middot; GPS + Cellular &middot; GPS &middot; Blood Oxygen app &middot; ECG app &middot; High and low heart rate notifications.",
+      "cacheId": "725XSlUCc6kJ",
+      "formattedUrl": "https://www.apple.com/watch/",
+      "htmlFormattedUrl": "https://www.<b>apple</b>.com/watch/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSnRChVlxUMMpvXF7sL3ZS_FTB2HuEc5-PWRy2wo01eTNOUonS2AlfyIy8t",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "BreadcrumbList": [{}],
+        "metatags": [
+          {
+            "analytics-s-bucket-1": "appleglobal,applestoreww",
+            "og:image": "https://www.apple.com/v/watch/an/images/meta/gps-lte/og__n5qzveqr596m.png?202110040006",
+            "analytics-s-bucket-0": "appleglobal,applestoreww",
+            "og:type": "website",
+            "twitter:card": "summary_large_image",
+            "og:site_name": "Apple",
+            "al:ios:app_name": "Apple Store",
+            "og:title": "Watch",
+            "ac-gn-store-key": "SFX9YPYY9PPXCU9KH",
+            "al:ios:url": "https://www.apple.com/us/xc/watch?cid=AOS_ASA",
+            "og:description": "Apple Watch is the ultimate device for a healthy life. Available in three models: Apple Watch Series 6, Apple Watch SE, and Apple Watch Series 3.",
+            "al:ios:app_store_id": "375380948",
+            "analytics-s-channel": "applewatch.tab+other",
+            "twitter:site": "@Apple",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "ac:pricing-alias": "series-3-gps=W17_AL_SI_SP_WH_G",
+            "og:locale": "en_US",
+            "ac:tradein-alias": "watch-tradein=6755",
+            "position": "1",
+            "og:url": "https://www.apple.com/watch/",
+            "analytics-track": "watch - index/tab",
+            "analytics-s-bucket-2": "appleglobal,applestoreww"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.apple.com/v/watch/an/images/meta/gps-lte/og__n5qzveqr596m.png?202110040006"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Apple Inc. - Wikipedia",
+      "htmlTitle": "<b>Apple</b> Inc. - Wikipedia",
+      "link": "https://en.wikipedia.org/wiki/Apple_Inc.",
+      "displayLink": "en.wikipedia.org",
+      "snippet": "Apple Inc. is an American multinational technology company that specializes in consumer electronics, computer software, and online services. Apple is the\\xa0...",
+      "htmlSnippet": "<b>Apple</b> Inc. is an American multinational technology company that specializes in consumer electronics, computer software, and online services. <b>Apple</b> is the&nbsp;...",
+      "formattedUrl": "https://en.wikipedia.org/wiki/Apple_Inc.",
+      "htmlFormattedUrl": "https://en.wikipedia.org/wiki/<b>Apple</b>_Inc.",
+      "pagemap": {
+        "hcard": [
+          {
+            "url_text": "www.apple.com",
+            "bday": "1976-04-01",
+            "fn": "Apple Inc.",
+            "nickname": "Apple Computer Company[1] (1976–1977) Apple Computer, Inc.[2] (1977–2007)",
+            "logo": "Overhead view of Apple Park located in Cupertino, California",
+            "label": "1 Apple Park Way Cupertino, California, U.S.",
+            "category": "Public",
+            "url": "www.apple.com"
+          }
+        ],
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRS_kAtLrHahJejVIzi0Uesg4N-a1qxKcERoZ_6sxDMavhB7o5zsoGPeI",
+            "width": "300",
+            "height": "168"
+          }
+        ],
+        "metatags": [
+          {
+            "referrer": "origin",
+            "og:image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Apple_park_cupertino_2019.jpg/1200px-Apple_park_cupertino_2019.jpg",
+            "og:type": "website",
+            "og:title": "Apple Inc. - Wikipedia",
+            "format-detection": "telephone=no"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Apple_park_cupertino_2019.jpg/1200px-Apple_park_cupertino_2019.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "iPad - Apple",
+      "htmlTitle": "iPad - <b>Apple</b>",
+      "link": "https://www.apple.com/ipad/",
+      "displayLink": "www.apple.com",
+      "snippet": "Retina display. A13 Bionic chip. Lightning connector. 4G LTE cellular. Works with. Apple Pencil (1st generation). Works with. Smart Keyboard\\xa0...",
+      "htmlSnippet": "Retina display. A13 Bionic chip. Lightning connector. 4G LTE cellular. Works with. <b>Apple</b> Pencil (1st generation). Works with. Smart Keyboard&nbsp;...",
+      "cacheId": "akLkWPtX0r4J",
+      "formattedUrl": "https://www.apple.com/ipad/",
+      "htmlFormattedUrl": "https://www.<b>apple</b>.com/ipad/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0wg0GJL1pdJTLKdQuVCPKlfl3GMVmk_igZKZa7ePozHOpwG2LWMWKqls",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "BreadcrumbList": [{}],
+        "metatags": [
+          {
+            "analytics-s-bucket-1": "appleglobal,applestoreww",
+            "og:image": "https://www.apple.com/v/ipad/home/bq/images/meta/ipad__o3qwbzdfrlmy_og.png?202109301324",
+            "analytics-s-bucket-0": "appleglobal,applestoreww",
+            "og:type": "website",
+            "twitter:card": "summary_large_image",
+            "og:site_name": "Apple",
+            "al:ios:app_name": "Apple Store",
+            "og:title": "iPad",
+            "ac-gn-store-key": "SFX9YPYY9PPXCU9KH",
+            "al:ios:url": "https://www.apple.com/us/xc/ipad?cid=AOS_ASA",
+            "og:description": "Explore the world of iPad. Featuring an all-new iPad and iPad mini, and the powerful iPad Pro and iPad Air.",
+            "al:ios:app_store_id": "375380948",
+            "analytics-s-channel": "ipad.tab+other",
+            "twitter:site": "@Apple",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "ac:pricing-alias": "ipad-pro=IPADPRO11_WI_2021",
+            "og:locale": "en_US",
+            "position": "1",
+            "og:url": "https://www.apple.com/ipad/",
+            "analytics-track": "ipad - index/tab",
+            "analytics-s-bucket-2": "appleglobal,applestoreww"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.apple.com/v/ipad/home/bq/images/meta/ipad__o3qwbzdfrlmy_og.png?202109301324"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "App Store Review Guidelines - Apple Developer",
+      "htmlTitle": "App Store Review Guidelines - <b>Apple</b> Developer",
+      "link": "https://developer.apple.com/app-store/review/guidelines/",
+      "displayLink": "developer.apple.com",
+      "snippet": "Jun 7, 2021 ... 4.7 HTML5 Games, Bots, etc. 4.8 Sign in with Apple; 4.9 Streaming games. 5. Legal. 5.1 Privacy; 5.1.1 Data Collection and Storage; 5.1.",
+      "htmlSnippet": "Jun 7, 2021 <b>...</b> 4.7 HTML5 Games, Bots, etc. 4.8 Sign in with <b>Apple</b>; 4.9 Streaming games. 5. Legal. 5.1 Privacy; 5.1.1 Data Collection and Storage; 5.1.",
+      "cacheId": "33LGnE4KqB8J",
+      "formattedUrl": "https://developer.apple.com/app-store/review/guidelines/",
+      "htmlFormattedUrl": "https://developer.<b>apple</b>.com/app-store/review/guidelines/",
+      "pagemap": {
+        "metatags": [
+          {
+            "omni_page": "App Store Review Guidelines - (English)",
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+            "author": "Apple Inc."
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "iPhone Battery and Performance - Apple Support",
+      "htmlTitle": "iPhone Battery and Performance - <b>Apple</b> Support",
+      "link": "https://support.apple.com/en-us/HT208387",
+      "displayLink": "support.apple.com",
+      "snippet": "Sep 24, 2021 ... Apple Pay. For a low battery state of charge and colder temperatures, performance management changes are temporary. If a device battery has\\xa0...",
+      "htmlSnippet": "Sep 24, 2021 <b>...</b> <b>Apple</b> Pay. For a low battery state of charge and colder temperatures, performance management changes are temporary. If a device battery has&nbsp;...",
+      "cacheId": "kO71xoIE_uYJ",
+      "formattedUrl": "https://support.apple.com/en-us/HT208387",
+      "htmlFormattedUrl": "https://support.<b>apple</b>.com/en-us/HT208387",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrGeEO55iPdOYFM1bQDqBArBohLXmT1_W8BIkZTNOH_qjY-rLn6W2eGnfE",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "Organization": [{ "name": "Apple", "telephone": "1-800-692-7753" }],
+        "techarticle": [
+          {
+            "articlebody": "Your iPhone is designed to deliver an experience that is simple and easy to use. This is only possible through a combination of advanced technologies and sophisticated engineering. One important...",
+            "headline": "iPhone Battery and Performance",
+            "datepublished": "2021-09-24"
+          }
+        ],
+        "BreadcrumbList": [{}],
+        "organization": [{ "name": "Apple" }],
+        "metatags": [
+          {
+            "og:image": "https://support.apple.com/library/content/dam/edam/applecare/images/en_US/social/ios-battery-performance-social-card.jpg",
+            "twitter:card": "summary_large_image",
+            "og:image:width": "630",
+            "og:site_name": "Apple Support",
+            "ac-gn-store-key": "S2A49YFKJF2JAT22K",
+            "og:description": "Understand iPhone performance and its relation to your battery.",
+            "twitter:image": "https://support.apple.com/library/content/dam/edam/applecare/images/en_US/social/ios-battery-performance-social-card.jpg",
+            "ac-gn-search-input": "q",
+            "ac-gn-search-action": "https://support.apple.com/kb/index",
+            "twitter:site": "@AppleSupport",
+            "ac-gn-search-field[src]": "globalnav_support",
+            "ac-gn-search-field[type]": "organic",
+            "ac-gn-search-field[page]": "search",
+            "og:type": "article",
+            "twitter:title": "iPhone Battery and Performance",
+            "og:title": "iPhone Battery and Performance",
+            "og:image:height": "1200",
+            "telephone": "1-800-692-7753",
+            "ac-gn-search-field[locale]": "en_US",
+            "viewport": "width=device-width, initial-scale=1",
+            "twitter:description": "Understand iPhone performance and its relation to your battery.",
+            "og:locale": "en_US",
+            "name": "Apple",
+            "position": "1",
+            "og:url": "https://support.apple.com/en-us/HT208387"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://support.apple.com/library/content/dam/edam/applecare/images/en_US/social/ios-battery-performance-social-card.jpg"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Apple Beta Software Program",
+      "htmlTitle": "<b>Apple</b> Beta Software Program",
+      "link": "https://beta.apple.com/",
+      "displayLink": "beta.apple.com",
+      "snippet": "Apple Beta Software Program. Help make the next releases of iOS, iPadOS, macOS, tvOS and watchOS our best yet. As a member of the Apple Beta Software\\xa0...",
+      "htmlSnippet": "<b>Apple</b> Beta Software Program. Help make the next releases of iOS, iPadOS, macOS, tvOS and watchOS our best yet. As a member of the <b>Apple</b> Beta Software&nbsp;...",
+      "cacheId": "HbIwCPtIKGsJ",
+      "formattedUrl": "https://beta.apple.com/",
+      "htmlFormattedUrl": "https://beta.<b>apple</b>.com/",
+      "pagemap": {
+        "metatags": [
+          {
+            "viewport": "width=device-width, initial-scale=1, viewport-fit=cover"
+          }
+        ]
+      }
+    }
+  ]
+}
