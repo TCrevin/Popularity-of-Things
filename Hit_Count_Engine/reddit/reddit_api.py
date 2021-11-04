@@ -15,19 +15,30 @@ reddit = praw.Reddit(client_id="9aC2iDzQQi04w-q1cPmjUw",
 
 def translateQuery(query):
         """Translate some character which are unreadable by reddit API"""
-        tr = {"+":"plus", "#":"sharp", "-":"minus"}
-        for k,v in tr:
-            if k in query:
-                query = query.replace(k,v)
+        tr = {'+':"plus", '#':"sharp", '-':"minus"}
+        for key in tr:
+            if key in query:
+                query = query.replace(key,tr[key])
         return query
     
+    
+def hasTag(subObject):
+    tags = {"program":3, "comput":3, "develop":3, "dev":2, "software":2, "language":2, "framework":2, "web":1, "work":1}
+    tagScore=0
+    for key in tags:
+        if key in subObject.lower():
+            tagScore+=tags[key]
+    return(tagScore>=5)
+    
+
 class Fetch:
     
-    def __init__(self, query, subReddit='all', timestamp='all'):
+    def __init__(self, query, subReddit='all', timestamp='week'):
         """
         :param query: defined search term for tweets tagged with #query
         """
-        self.query = translateQuery(query)
+        #query = translateQuery(query)
+        self.query = query
         self.subReddit = subReddit
         self.submissions = reddit.subreddit(subReddit).search(query, time_filter=timestamp)
         
@@ -49,31 +60,35 @@ class Fetch:
         
         i=0
         for submission in self.submissions:
-            #query upvotes count
-            subPopularity = submission.score
             
-            #query counting in TITLE
-            subTitleCount = submission.title.count(self.query)
-            
-            #query counting in SUB TEXT
-            subTextCount = submission.selftext.count(self.query)
-            
-            totalScore += (subTitleCount+subTextCount)*subPopularity
-            
-            #query counting in SUB COMMENTS
-            for comment in submission.comments:
-                if not(isinstance(comment, MoreComments)):
-                    totalScore += comment.body.count(self.query)*comment.score
-                    
-            if i>=10:
-                break
-            i+=1
+            #if a minmimum amount of tag in sub title or text
+            if hasTag(submission.title) or hasTag(submission.selftext) or hasTag(submission.subreddit.display_name) or hasTag(submission.subreddit.description):
+                
+                #submission upvotes count
+                subPopularity = submission.score
+                
+                #submission comments count
+                subComCount = len(submission.comments)
+                
+                #query counting in TITLE
+                subTitleCount = submission.title.count(self.query)
+                
+                #query counting in SUB TEXT
+                subTextCount = submission.selftext.count(self.query)
+                
+                totalScore += (subTitleCount+subTextCount)*subPopularity*subComCount
+                
+                #query counting in SUB COMMENTS
+                for comment in submission.comments:
+                    if not(isinstance(comment, MoreComments)):
+                        totalScore += comment.body.count(self.query)*comment.score
+                        
+                if i>=10:
+                    break
+                i+=1
                  
         print("Popularity of " + self.query + " : " + str(totalScore))
-        return totalScore 
-        #totalScore = 
-        #    sub_upvotes*(title_query_occurence + sub_text_query_occurence) 
-        #  + sum(comment(i)_score*(comment_query_occurence))
+        return totalScore
     
     
     
@@ -101,6 +116,7 @@ class Fetch:
             return ding
         except FileNotFoundError:
             self.readResults(filename)
+
 
     def clearResults(self, file):
         """
@@ -137,14 +153,13 @@ def main():
                 break
             
             #Getting a timestamp
-            #timestamp = 'all'
-            timestamp = input("Please choos a timestamp : 'hour', 'day', 'week', 'month', 'year', 'all' ")
+            #timestamp = input("Please choos a timestamp : 'hour', 'day', 'week', 'month', 'year', 'all' ")
             
             #Looking for a subreddit
             subRBool = input("Do you want to look at a precise subreddit ? (y/n)")
             if subRBool=='y':
                 subReddit = input("What subreddit do you want to browse : ")
-                fetch = Fetch(query, subReddit, timestamp)
+                fetch = Fetch(query, subReddit, timestamp="week")
             elif subRBool=='n':
                 fetch = Fetch(query)
                 
@@ -160,7 +175,7 @@ def main():
             fetch.writeResults(file, output_json)
             print("Completed fetch, query added to the JSON results file")
                     
-                    
+            
         except UnboundLocalError:
             print("Wrong input, please retry")
         except KeyboardInterrupt:
@@ -169,5 +184,9 @@ def main():
             
     print('Goodbye !')
 
-if __name__ == "__main__":
-    main()
+"""if __name__ == "__main__":
+    main()"""
+    
+print(type(translateQuery("c++")))
+print(type("cplusplus"))
+print(translateQuery("c++") == "cplusplus")
