@@ -27,6 +27,19 @@ globalTags = {"program":3, "code":3, "comput":3, "develop":3, "dev":3,
             "usb":-5}
 
 def translateQuery(query):
+    """
+
+    Parameters
+    ----------
+    query : string
+        A string query to translate.
+
+    Returns a translated query if the base query has unwanted characters
+    -------
+    query : string
+        A translated query.
+
+    """
     """Translate some character which are unreadable by reddit API"""
     tr = {'+':"plus", '#':"sharp", '-':"minus"}
     for key in tr:
@@ -36,6 +49,23 @@ def translateQuery(query):
     
     
 def hasTag(subObject, tagDict=globalTags):
+    """
+
+    Parameters
+    ----------
+    subObject : string
+        A string got from submission (sub title, selftext, comments).
+    tagDict : dict, optional
+        A dictionary of tags to check if the submission is corresponding to what we are looking for. 
+        Examples: {"robot":3, "animal":-3}, the user whish to look for a query related to robot but not to animal
+        The default is globalTags.
+
+    Returns a integer representation of the relativness of a submission object (title, selftext, comment).
+    -------
+    tagScore : int
+        A integer representation of the relativness of a submission object (title, selftext, comment).
+
+    """
     
     tagScore=0
     if subObject is not None:
@@ -49,8 +79,24 @@ class Fetch:
     
     def __init__(self, query, subReddit='all', timestamp='week', tags=globalTags):
         """
-        :param query: defined search term for tweets tagged with #query
+
+        Parameters
+        ----------
+        query : string
+            A search query.
+        subReddit : string, optional
+            A subreddit to look the query in. The default is 'all'.
+        timestamp : string, optional
+            A timestamp to look the query results occured during this timestamp. The default is 'week'.
+        tags : dict, optional
+            A dictionary of tags to check if the submission is corresponding to what we are looking for. The default is globalTags.
+
+        Returns an instance of a fetch class
+        -------
+        None.
+
         """
+        
         #query = translateQuery(query)
         self.query = query
         self.subReddit = subReddit
@@ -70,7 +116,19 @@ class Fetch:
 
         
     def getPopularityScore(self, limit=10):
-        """Calculate popularity score of the query"""
+        """
+
+        Parameters
+        ----------
+        limit : int, optional
+            A limit of how much submissions we want to process. The default is 10.
+
+        Returns a popularity score based on submission's and its comment's upvotes and query occcurences
+        -------
+        totalScore : int
+            A popularity socre of a query.
+
+        """
         totalScore=0
         titles = {}
         titlesScore = {}
