@@ -1,8 +1,1 @@
-{
-	"queries": {
-		"python": [
-			{"count":"0", "timestamp":"0"}
-		]
-	}
-}
-	
+{"queries": {"python": [{"count": "378836", "timestamp": "1636647494"}], "FORTRAN": [{"count": "41", "timestamp": "1636647119"}], "C++": [{"count": "20308", "timestamp": "1636647334"}], "C#": [{"count": "20331", "timestamp": "1636649734"}], "Rust": [{"count": "6013", "timestamp": "1636648028"}]}}
