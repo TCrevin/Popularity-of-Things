@@ -140,14 +140,14 @@ class Fetch:
         if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
             print(1)
             input_dict = self.__updateQuery(input_dict, query, value)
-            input_dict = self.__sortDict(input_dict, query)
+            #input_dict = self.__sortDict(input_dict, query)
             return input_dict
         elif self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
             print(2)
             print("Query exists but it's not 7 days old yet.") # TODO: Return remaining time and print.
         elif not self.__exists(input_dict, query):
             print(3)
-            self.__sortDict(input_dict, query)
+            #self.__sortDict(input_dict, query)
             input_dict = self.__updateQuery(input_dict, query, value)
             return input_dict
 
