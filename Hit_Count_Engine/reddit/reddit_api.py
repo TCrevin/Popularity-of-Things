@@ -244,6 +244,3 @@ class Fetch:
     def writeResults(self, file, output_dict):
         file.write(str(output_dict))
         file.close()
-        
-        
-print(__name__)

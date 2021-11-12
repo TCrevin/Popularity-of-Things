@@ -7,7 +7,7 @@ import collections
 from functools import reduce
 
 
-from .reddit_api import Fetch
+from reddit_api import Fetch
 
 # reddit_api globam variables
 from reddit_api import globalTags
@@ -33,7 +33,7 @@ def main():
             otherTagDict.update(globalTags)
             while(tagBool == 'y'):
                 otherTag = input("What tag do you wish to add : ")
-                otherTagScore = input("Whith what score ? It can be negative if not wanted in the search: ")
+                otherTagScore = int(input("Whith what score ? It can be negative if not wanted in the search: "))
                 otherTagDict[otherTag]=otherTagScore
                 
                 tagBool = input("Do you wish to add a specific tag ? (y/n): ")
