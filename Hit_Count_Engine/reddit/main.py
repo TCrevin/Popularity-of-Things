@@ -1,4 +1,18 @@
-from reddit_api import *
+import requests
+import json
+import ast
+import subprocess
+import time
+import collections
+from functools import reduce
+
+
+from .reddit_api import Fetch
+
+# reddit_api globam variables
+from reddit_api import globalTags
+
+import matplotlib.pyplot as plt
 
 def main():
     print("Welcome.\n\n")
@@ -62,3 +76,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

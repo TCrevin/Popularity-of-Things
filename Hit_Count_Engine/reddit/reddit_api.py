@@ -11,6 +11,13 @@ import matplotlib.pyplot as plt
 import praw
 from praw.models import MoreComments
 
+
+subreddits = ["programming", "ProgrammerHumor", ]
+times = ["all", "year", "month", "week", "day", "hour"]
+sorts = ["relevance", "hot", "top", "new", "comments"]
+
+languages = ["c", "c++", "c#", "java", "javascript", "php", "python", "golang", "fortran"]
+
 reddit = praw.Reddit(client_id="9aC2iDzQQi04w-q1cPmjUw",
                                   client_secret="O29M5Puueuew1y_rDYVuvUZLdKuF_w",
                                   user_agent="NLP_Project_API/0.0.1",
@@ -41,7 +48,7 @@ def translateQuery(query):
 
     """
     """Translate some character which are unreadable by reddit API"""
-    tr = {'+':"plus", '#':"sharp", '-':"minus"}
+    tr = {'+':"p", '#':"sharp"}
     for key in tr:
         if key in query:
             query = query.replace(key,tr[key])
@@ -70,14 +77,14 @@ def hasTag(subObject, tagDict=globalTags):
     tagScore=0
     if subObject is not None:
         for key in tagDict:
-            if key in subObject.lower():
+            if key.lower() in subObject.lower():
                 tagScore+=tagDict[key]
     return tagScore
     
 
 class Fetch:
     
-    def __init__(self, query, subReddit='all', timestamp='week', tags=globalTags):
+    def __init__(self, query, subReddit='all', timestamp='week', tags=globalTags, sortP="relevance"):
         """
 
         Parameters
@@ -97,10 +104,10 @@ class Fetch:
 
         """
         
-        #query = translateQuery(query)
         self.query = query
+        self.translatedQuery = translateQuery(query)
         self.subReddit = subReddit
-        self.submissions = reddit.subreddit(subReddit).search(query, time_filter=timestamp)
+        self.submissions = reddit.subreddit(subReddit).search(query, time_filter=timestamp, sort=sortP)
         self.tags=tags
         
         self.resultsDir = os.getcwd()
@@ -139,8 +146,8 @@ class Fetch:
             
             #if a minmimum amount of tag in sub title or text
             #print(self.tags())
-            if (hasTag(submission.title, self.tags)>=3
-                or hasTag(submission.selftext, self.tags) >=3 
+            if (hasTag(submission.title.lower(), self.tags)>=3
+                or hasTag(submission.selftext.lower(), self.tags) >=3 
                 #or hasTag(submission.subreddit.display_name)>=4
                 #or hasTag(submission.subreddit.description)>=4:
                 ):
@@ -152,28 +159,43 @@ class Fetch:
                 subComCount = len(submission.comments)
                 
                 #query counting in TITLE
-                subTitleCount = submission.title.lower().count(self.query)
+                subTitleCount=0
+                if self.query in submission.title.lower():
+                    subTitleCount = submission.title.lower().count(self.query)
+                elif self.translatedQuery in submission.title.lower():
+                    subTitleCount = submission.title.lower().count(self.translatedQuery)
                 
                 #query counting in SUB TEXT
-                subTextCount = submission.selftext.lower().count(self.query)
+                subTextCount=0
+                if self.query in submission.selftext.lower():
+                    subTextCount = submission.selftext.lower().count(self.query)
+                elif self.translatedQuery in submission.selftext.lower():
+                    subTextCount = submission.selftext.lower().count(self.translatedQuery)
                 
                 totalScore += (subTitleCount+subTextCount)*subPopularity#*subComCount
                 
                 #query counting in SUB COMMENTS
                 for comment in submission.comments:
                     if not(isinstance(comment, MoreComments)):
-                        totalScore += comment.body.lower().count(self.query)#*comment.score
+                        if self.query in comment.body.lower():
+                            totalScore += comment.body.lower().count(self.query)#*comment.score
+                        elif self.translatedQuery in comment.body.lower():
+                            totalScore += comment.body.lower().count(self.translatedQuery)#*comment.score
                         
+                #to know the max value of hasTag fct between sub title and selftext
                 titles[submission.title]=max(hasTag(submission.title, self.tags),hasTag(submission.selftext, self.tags))
+                
+                #score of the submission
                 titlesScore[submission.title] = totalScore-ts
+                
                 print("Searching for corresponding posts, please wait...")
                 
-                        
+                #limit of i submissions
                 if i>=10:
                     break
                 i+=1
                  
-        print("Popularity of " + self.query + " : " + str(totalScore))
+        print("\nPopularity of " + self.query + " : " + str(totalScore))
         print(titles)
         print("\n")
         print(titlesScore)
@@ -222,3 +244,6 @@ class Fetch:
     def writeResults(self, file, output_dict):
         file.write(str(output_dict))
         file.close()
+        
+        
+print(__name__)
