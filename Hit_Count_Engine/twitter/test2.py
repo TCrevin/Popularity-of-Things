@@ -3,7 +3,7 @@ import json
 import ast
 import subprocess
 import time
-import collections
+import collections.abc
 from functools import reduce
 """
 Twitter API calls.
@@ -71,7 +71,7 @@ class Fetch:
     def __checkTimestamp(self, input_dict, query):
         print("DEBUG: Calling checkTimestamp()")
         #outdict = collections.defaultdict(lambda: collections.defaultdict(input_dict))
-        val = input_dict.get(query, {}).get('timestamp', {})
+        val = input_dict.get(query, {}).get("timestamp", {})
         print("DEBUG Val: ", val)
         old_timestamp = int(val)
         new_timestamp = int(time.time())
@@ -89,10 +89,15 @@ class Fetch:
         else:
             print("Query not in dict")
 
-    def __sortDict(self, input_dict):
+    def __sortDict(self, input_dict, query): # FIXME: Broken. Sorting does not work. Old lambda function broken.
         print("DEBUG: Calling sortDict(): ", input_dict)
-        outfile = sorted(input_dict.items(), key=lambda key_value: key_value[1]['count']) # sort
-        return outfile
+        outfile = sorted(input_dict["queries"][query][0]['count']) # sort
+        outfile2 = sorted(input_dict.items(), key=lambda x: x[0], reverse=True) # TODO: Append OrderedDict by order of 'count'
+        print(outfile2) # test remove when not in use                           #       Pop item from old dict when done
+        #return outfile
+
+    def getValues(self, input_dict, query):
+        return input_dict["queries"][query][0]['timestamp'], input_dict["queries"][query][0]['count']
 
     def deepUpdate(self, input_dict, output_dict):
         for key, val in output_dict.items():
@@ -114,11 +119,11 @@ class Fetch:
         timestamp = time.time()
         #outdict = collections.defaultdict(dict, input_dict)
         print("DEBUG: input_dict: ", input_dict)
-        input_dict['queries'][query][0]['count'] = value
-        input_dict['queries'][query][0]['timestamp'] = time.time()
+        input_dict["queries"][query][0]["count"] = value
+        input_dict["queries"][query][0]["timestamp"] = str(int(time.time()))
         print("DEBUG: DLC2: ", value)
         dlc = input_dict.get("queries").get(query, "")
-        query_list = dict(dlc[0])['count']
+        query_list = dict(dlc[0])["count"]
         print("DEBUG updated outdict: ", input_dict)
         #outdict[0][1]["count"] = value # TODO: Assignment not working correctly
         #outdict[0][1]["timestamp"] = timestamp
@@ -133,12 +138,16 @@ class Fetch:
         query = str(self.getCount()[0])
         value = str(self.getCount()[1])
         if self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
+            print(1)
             input_dict = self.__updateQuery(input_dict, query, value)
-            input_dict = self.__sortDict(input_dict)
+            #input_dict = self.__sortDict(input_dict, query)
             return input_dict
-        elif self.__exists(input_dict, query) and not self.__checkTimestamp(input_dict, query):
+        elif self.__exists(input_dict, query) and self.__checkTimestamp(input_dict, query):
+            print(2)
             print("Query exists but it's not 7 days old yet.") # TODO: Return remaining time and print.
         elif not self.__exists(input_dict, query):
+            print(3)
+            #self.__sortDict(input_dict, query)
             input_dict = self.__updateQuery(input_dict, query, value)
             return input_dict
 
@@ -158,15 +167,15 @@ class Fetch:
             print("DEBUG: Found query in queries!")
             old_stamp = int(input_dict[query]["timestamp"])
             if nu_stamp-old_stamp>604800: # older than a week, update
-                input_dict.update({query: {"count":value, "timestamp":nu_stamp}})
-                sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+                input_dict.update({query: {"count":str(value), "timestamp":str(nu_stamp)}})
+                sort_dict = sorted(input_dict.items(), key=lambda x: int(x["count"]), reverse=True)
                 for v, k in sort_dict:
                     output_dict[v] = k
                 return output_dict
         else:
             print("Query not in queries, resuming with updating table....")
-            input_dict.update({query: {"count": value, "timestamp": nu_stamp}})
-            sort_dict = sorted(input_dict.items(), key=lambda x: int(x['count']), reverse=True)
+            input_dict.update({query: {"count": str(value), "timestamp": str(int(nu_stamp))}})
+            sort_dict = sorted(input_dict.items(), key=lambda x: int(x["count"]), reverse=True)
             for v, k in sort_dict:
                 output_dict[v] = k
                 return output_dict
@@ -175,6 +184,7 @@ class Fetch:
         """Open and read file. File must be closed separately if writeResults() is not called"""
         try:
             file = open(filename)
+            print("Type of file: ", type(file))
             data = json.load(file)
             #ding = data.replace("queries: ", '')
             return data
@@ -195,7 +205,8 @@ class Fetch:
             print("An unknown error occurred")
 
     def writeResults(self, file, output_dict): # TODO: Fixme:
-        file.write(str(output_dict))
+        print("Calling write.")
+        file.write(json.dumps(output_dict))
         file.close()
 
 
@@ -214,7 +225,7 @@ def errorMsg():
 
 
 def main():
-    global input_file
+    global input_file, file
     mode_list = ['1', '2', 'X', 'x']
     print("Welcome.\n\n")
     while True:
@@ -233,20 +244,26 @@ def main():
                 fetch.getTweets()
             if mode == '2':  # TODO: Clear, write updated dict
                 try:
-                    # print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
+                    print("Results files: \n\n", fetch.listResultsDir()) # list files in results dir # DO NOT DELETE COMMENT
                     infile = fetch.readResults("results/results2.json")
                     input_file = ast.literal_eval(str(infile))
                     file = open("results/results2.json", "r+")
-                    output_dict = fetch.build(input_file)
-                    output_json = json.dumps(output_dict)
-                    #fetch.writeResults(file, output_json)
+                    fetch.getValues(input_file, query)
+                    fetch.clearResults(file)
+
+                    #output_dict = fetch.build(input_file)
+                    #output_json = json.dumps(output_dict)
+                    fetch.writeResults(file, fetch.build(input_file))
                     print("Completed fetch")
                 except KeyError:
-                    output_dict = {'queries': {fetch.getCount()[0]:
-                                                   [{'count': fetch.getCount()[1],
-                                                     'timestamp':time.time()}]}}
-                    test = fetch.deepUpdate(input_dict=input_file, output_dict=output_dict)
-                    print("Test dict: ", test)
+                    output_dict = {"queries": {query:
+                                                   [{"count": fetch.getCount()[1],
+                                                     "timestamp":str(int(time.time()))}]}}
+                    inject = fetch.deepUpdate(input_dict=input_file, output_dict=output_dict)
+                    fetch.writeResults(file, inject)
+                    print("Test dict: ", inject)
+                #except:
+                #    print("FUCK")
             if mode == 'X' or 'x':
                 print("Exiting program")
                 quit()

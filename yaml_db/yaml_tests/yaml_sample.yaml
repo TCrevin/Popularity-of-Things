@@ -1,5 +1,5 @@
 queries:
-   programming_languages:
+   programming language:
         - "A.NET"
         - "A-0 System"
         - "A+"
@@ -66,6 +66,7 @@ queries:
         - "Boomerang"
         - "Bosque"
         - "C"
+        - "Python"
    animals:
         - "python"
         - "kangaroo"

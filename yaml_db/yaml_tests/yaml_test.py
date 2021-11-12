@@ -1,28 +1,36 @@
 import yaml
 import time
 
-
-bird_counter=1
-
 query = input("Insert query: ")
-
+print("Query: ", query.lower())
 with open ("yaml_sample.yaml", "r+") as stream:
-    #try:
+        items = []
         inputYaml = yaml.load(stream, Loader=yaml.FullLoader)
-        #for key, item in inputYaml.items():
-        #    if (key == "programming_languages"):
-        #        for language in item:
-        #            print("Bird{}: {}".format(key, item))
-        #            bird_counter+=1
-        queries = inputYaml.get('queries')[0].get(query)
-        p1 = time.time()
-        for count, item in enumerate(queries):
-            print(count, ": ", item)
-        p2 = time.time()-p1
-        print("Time it took to loop through input: ", p2)
-        #print(dict(queries[0]).get('programming_languages'))
+        print("DEBUG inputYaml(): ", type(inputYaml))
+        for x, item in enumerate(inputYaml.get('queries')): # check for duplicates
+            print(inputYaml.get('queries').get(item))
+            item_container = inputYaml.get('queries').get(item)
+            lower_iterator = (map(lambda x: x.lower(), item_container)) # iterate through items, return new list where items are lowercase
+            lower_container = list(lower_iterator) # construct list
+            if query in lower_container: # check if search query in list
+                #print("Found")
+                items.append(item) # add category to list
+            else:
+                pass
 
-            #print(inputYaml['queries']['programming_languages'][entry])
 
-    #except:
-    #    print("Oopsie.")
+        if len(items) == 0:
+            print("No such item in list.")
+            exit()
+        print("Please define category from the following: ")
+        for item in items: print(query, ": ",item) # list of categories where query was found in
+
+        while True:
+            category = input("Category : ")
+            if category in items:
+                print("Chosen category: ", category)
+                print(inputYaml.get('queries').get(category)) # return this to use as list of inputs for API to loop through
+                break
+            else:
+                print("Error. Please check input")
+
