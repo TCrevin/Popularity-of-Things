@@ -53,8 +53,8 @@ def translateQuery(query):
         if key in query:
             query = query.replace(key,tr[key])
     return query
-    
-    
+
+
 def hasTag(subObject, tagDict=globalTags):
     """
 
@@ -63,7 +63,7 @@ def hasTag(subObject, tagDict=globalTags):
     subObject : string
         A string got from submission (sub title, selftext, comments).
     tagDict : dict, optional
-        A dictionary of tags to check if the submission is corresponding to what we are looking for. 
+        A dictionary of tags to check if the submission is corresponding to what we are looking for.
         Examples: {"robot":3, "animal":-3}, the user whish to look for a query related to robot but not to animal
         The default is globalTags.
 
@@ -73,14 +73,14 @@ def hasTag(subObject, tagDict=globalTags):
         A integer representation of the relativness of a submission object (title, selftext, comment).
 
     """
-    
+
     tagScore=0
     if subObject is not None:
         for key in tagDict:
             if key.lower() in subObject.lower():
                 tagScore+=tagDict[key]
     return tagScore
-    
+
 
 class Fetch:
     
@@ -121,7 +121,6 @@ class Fetch:
         process = subprocess.Popen(['ls', self.getResultsDir()], stdout=subprocess.PIPE)
         return process.communicate()[0].decode('utf-8')
 
-        
     def getPopularityScore(self, limit=10):
         """
 
@@ -178,9 +177,9 @@ class Fetch:
                 for comment in submission.comments:
                     if not(isinstance(comment, MoreComments)):
                         if self.query in comment.body.lower():
-                            totalScore += comment.body.lower().count(self.query)#*comment.score
+                            totalScore += comment.body.lower().count(self.query)*comment.score
                         elif self.translatedQuery in comment.body.lower():
-                            totalScore += comment.body.lower().count(self.translatedQuery)#*comment.score
+                            totalScore += comment.body.lower().count(self.translatedQuery)*comment.score
                         
                 #to know the max value of hasTag fct between sub title and selftext
                 titles[submission.title]=max(hasTag(submission.title, self.tags),hasTag(submission.selftext, self.tags))
@@ -191,7 +190,7 @@ class Fetch:
                 print("Searching for corresponding posts, please wait...")
                 
                 #limit of i submissions
-                if i>=10:
+                if i>=100:
                     break
                 i+=1
                  
@@ -200,9 +199,7 @@ class Fetch:
         print("\n")
         print(titlesScore)
         return totalScore
-    
-    
-    
+
     def appendCount(self, input_dict):
         """
         Append the input dictionary of queries with results. Returned dictionary of query results is reverse
@@ -242,5 +239,5 @@ class Fetch:
             print("An unknown error occurred")
 
     def writeResults(self, file, output_dict):
-        file.write(str(output_dict))
+        file.write(output_dict)
         file.close()

@@ -20,7 +20,7 @@ def main():
     while(True):
         try:
             #Getting the query
-            query = input("Enter a query, 'stop' if you want to stop : ")
+            query = input("Enter a query, 'stop' if you want to stop : ").lower()
             
             #Stop the loop
             if query=='stop':
@@ -56,6 +56,7 @@ def main():
             input_file = ast.literal_eval(iofile)
             file = open("results/results.json", "r+")
             output_dict = fetch.appendCount(input_file)
+            print("THIS THE OUTPUT DICT")
             print(output_dict)
             output_json = json.dumps("queries: " + str(output_dict))
             fetch.writeResults(file, output_json)
