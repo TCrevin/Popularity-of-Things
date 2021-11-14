@@ -1,21 +1,197 @@
-categories = {"insects":["fly", "bee", "ant"],
-              "fishes":["clownfish", "blobfish", "carp"],
-              "birds":["hummingbird", "magpie", "crow"],
-              "brand":["nike", "adidas", "apple"],
-              "vehicules":["bike", "car", "bus"],
-              "fruits":["apple", "pear", "strawberry", "banana"],
-              "drinks":["beer", "soda", "water"],
-              "vegetables":["cucumber", "carrot", "cabbage"],
-              "flowers":["tulip", "rose", "violet"],
-              "colors":["blue", "green", "yellow", "purple"],
-              "countries":["finland", "france", "mexico"],
-              "continents":["europe", "oceania", "africa", "asia", "america"],
-              "oceans":["atlantic", "indian", "arctic"],
-              "seas":["mediterranean", "aegean", "adriatic"],
-              "sports":["tennis", "soccer", "racing", "rugby"],
-              "electronic devices":["phone", "computer", "headset", "mouse"],
-              "furnitures":["table", "chair", "closet"],
-              "hats":["cap", "bowler", "tricorn"],
-              "book types":["novel", "essay", "drama"],
-              "authors":["sand", "camus", "proust", "kafka"]
-              }
+
+
+queries:
+    insects:
+        - "fly"
+        - "bee"
+        - "ant"
+        - "wasp"
+        - "beetle"
+        - "butterfly"
+        - "moth"
+        - "dragonfly"
+        - "mosquito"
+    fishes:
+        - "clownfish"
+        - "blobfish"
+        - "carp"
+        - "cod"
+        - "eel"
+        - "sole"
+        - "salmon"
+        - "octopus"
+        - "sardines"
+    birds:
+        - "hummingbird"
+        - "magpie"
+        - "crow"
+        - "owl"
+        - "swan"
+        - "gull"
+        - "seagull"
+        - "tit"
+        - "goose"
+    brand:
+        - "nike"
+        - "adidas"
+        - "apple"
+        - "coca-cola"
+        - "toyota"
+        - "intel"
+        - "cisco"
+        - "oracle"
+        - "visa"
+    vehicules:
+        - "bike"
+        - "car"
+        - "bus"
+        - "van"
+        - "scooter"
+        - "bicycle"
+        - "train"
+        - "subway"
+    fruits:
+        - "apple"
+        - "pear"
+        - "strawberry"
+        - "banana"
+        - "avocado"
+        - "tomato"
+        - "orange"
+        - ""mango
+    drinks:
+        - "beer"
+        - "vodka"
+        - "whiskey"
+        - "gin"
+        - "pastis"
+        - "ricard"
+        - "fruit juice"
+        - "sirup"
+        - "soda"
+        - "water"
+    vegetables:
+        - "cucumber"
+        - "carrot"
+        - "cabbage"
+        - "potato"
+        - "garlic"
+        - "beetroot"
+        - "chili"
+        - "raddish"
+        - "spinach"
+    flowers:
+        - "tulip"
+        - "rose"
+        - "violet"
+        - "daisy"
+        - "iris"
+        - "pansy"
+        - "poppy"
+        - "lily"
+        - "mimosa"
+        - "anemone"
+    colors:
+        - "blue"
+        - "green"
+        - "yellow"
+        - "purple"
+        - "green"
+        - "red"
+        - "orange"
+        - "pink"
+        - "white"
+        - "black"
+        - "grey"
+    countries:
+        - "finland"
+        - "france"
+        - "mexico"
+        - "spain"
+        - "russia"
+        - "china"
+        - "usa"
+        - "italy"
+        - "britain"
+        - "uk"
+        - "ireland"
+        - "sweden"
+        - "norway"
+        - "danemark"
+        - "scotland"
+        - "germany"
+    continents:
+        - "europe"
+        - "asia"
+        - "africa"
+        - "oceania"
+        - "america"
+    oceans:
+        - "indian"
+        - "atlantic"
+        - "arctic"
+        - "pacific"
+    seas:
+        - "mediterranean"
+        - "adriatic"
+        - "aegean"
+        - "tasman"
+        - "ross"
+        - "banda"
+        - "caspian"
+        - "java"
+        - "tyrrhenian"
+    sports:
+        - "tennis"
+        - "hockey"
+        - "rugby"
+        - "racing"
+        - "basketball"
+        - "baseball"
+        - "running"
+        - "badminton"
+        - "volleyball"
+        - "golf"
+    electronic devices:
+        - "phone"
+        - "headphone"
+        - "computer"
+        - "mouse"
+        - "keyboard"
+        - "television"
+        - "scanner"
+        - "copier"
+        - "timer"
+        - "microphone"
+    hats:
+        - "cap"
+        - "bowler"
+        - "tricorn"
+        - "beret"
+        - "bucket"
+        - "vizor"
+        - "newsboy"
+        - "fedora"
+    book types:
+        - "novel"
+        - "drama"
+        - "essay"
+        - "diary"
+        - "memoir"
+        - "poetry"
+    authors:
+        - "sand"
+        - "stendhal"
+        - "gary"
+        - "voltaire"
+        - "flaubert"
+        - "zola"
+        - "balzac"
+        - "diderot"
+        - "verne"
+        - "dumas"
+        - "hugo"
+        - "camus"
+        - "proust"
+        - "shakespear"
+        - "kafka"
