@@ -1,0 +1,104 @@
+queries:
+   buildings:
+        - "mansion"
+        - "cottage"
+        - "shack"
+        - "skyscraper"
+   furniture:
+        - "bed"
+        - "chair"
+        - "table"
+        - "stool"
+   file_formats:
+        - "bin"
+        - "gif"
+        - "py"
+        - "png"
+   microcontrollers:
+        - "CC2650"
+        - "AT90"
+        - "MSP432"
+        - "ST62E40"
+   balls:
+        - "football"
+        - "handball"
+        - "basketball"
+        - "tennis ball"
+   shapes:
+        - "circle"
+        - "square"
+        - "oval"
+        - "hexagon"
+   currencies:
+        - "Euro"
+        - "US dollar"
+        - "mark"
+        - "yen"
+        - "won"
+   hobbies:
+        - "football"
+        - "airsoft"
+        - "frisbeegolf"
+   emotions:
+        - "anger"
+        - "joy"
+        - "sadness"
+        - "fear"
+        - "disgust"
+   weather:
+        - "sunny"
+        - "cloudy"
+        - "stormy"
+        - "rain"
+   personalities:
+        - "curiosity"
+        - "creativity"
+        - "egotism"
+        - "empathy"
+   materials:
+        - "wood"
+        - "steel"
+        - "plastic"
+   mammals:
+        - "squirrel"
+        - "elk"
+        - "mouse"
+        - "bat"
+        - "whale"
+   adjectives:
+        - "dead"
+        - "alive"
+        - "best"
+        - "dirty"
+   habitats:
+        - "forest"
+        - "grassland"
+        - "desert"
+   databases:
+        - "sqlite3"
+        - "mongodb"
+        - "postgresql"
+        - "mysql"
+   software_architectures:
+        - "monolithic"
+        - "component-based"
+        - "layered"
+        - "peer-to-peer"
+   algorithms:
+        - "doomsday algorithm"
+        - "nested sampling algorithm"
+        - "fuzzy clustering"
+        - "random search"
+   text_editors:
+        - "notepad"
+        - "notepad++"
+        - "visual studio code"
+        - "vim"
+        - "atom"
+        - "sublime text"
+   compilers:
+        - "clang"
+        - "gcc"
+        - "fasm"
+        - "cython"
+        - "tclsh"
