@@ -15,8 +15,7 @@ pytrend_all = TrendReq()
 
 # pytrend_all.build_payload(kw_list=["puma", "nike", "adidas"], cat="697", timeframe="now 1-H")
 pytrend_all.build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="today 3-m")
-# pytrend_normal.build_payload(kw_list=["volatility"], cat="7", timeframe="today 12-m")
-# pytrend_compsec.build_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
+# pytrend_normal.outputbuild_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
 
 int_all_df = pytrend_all.interest_over_time()
 # int_normal_df = pytrend_normal.interest_over_time()
@@ -29,7 +28,15 @@ int_all_df = pytrend_all.interest_over_time()
 # )
 
 # print(joined)
-print(int_all_df.head())
-summa = int_all_df.sum(numeric_only=True)  # TODO: calculate average (values between 0 and 100)
+print(int_all_df)
+summa = int_all_df.sum(numeric_only=True) / len(int_all_df)  # TODO: calculate average (values between 0 and 100)
 print(summa)
 print(summa.idxmax())
+
+
+"""
+plt.plot(int_all_df.iloc[:,0],int_all_df.iloc[:,1], label = "apple")
+plt.plot(int_all_df.iloc[:,0],int_all_df.iloc[:,2], label = "windows")
+plt.plot(int_all_df.iloc[:,0],int_all_df.iloc[:,3], label = "linux")
+plt.legend(loc="upper left")
+"""
