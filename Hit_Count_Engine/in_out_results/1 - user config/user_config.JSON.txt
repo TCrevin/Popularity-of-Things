@@ -1,0 +1,13 @@
+{
+"queries":{
+	"java", 
+	"python"
+}
+
+{
+"qualifying_terms":{
+	"programming",
+	"security"
+}
+
+//add qualifying terms weights

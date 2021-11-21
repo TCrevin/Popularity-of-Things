@@ -1,0 +1,9 @@
+1.1 - Convert JSON config to python Dictinoary 
+  -> queries = ["java", "python"] 
+  ->     qual_terms = ["programming", "security"]
+    or : qual_terms = {"programming": 3,  "security":-5}
+
+1.2 - Convert .TXT config to python Dictinoary 
+  -> queries = ["java", "python"]
+  ->     qual_terms = ["programming", "security"]
+    or : qual_terms = {"programming": 3,  "security": -5}
