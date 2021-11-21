@@ -1,2 +1,0 @@
-1 - Histograms: popularity count / query
-2 - Plot of weekly changes

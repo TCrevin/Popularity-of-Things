@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-import requests
 import json
-import ast
 import subprocess
 import os
-
-import pandas as pd
-import matplotlib.pyplot as plt
 
 import praw
 from praw.models import MoreComments
@@ -189,15 +184,16 @@ class Fetch:
                 
                 print("Searching for corresponding posts, please wait...")
                 
-                #limit of i submissions
-                if i>=100:
+                #limit of limit submissions
+                if i>=limit:
                     break
                 i+=1
                  
         print("\nPopularity of " + self.query + " : " + str(totalScore))
-        print(titles)
+        #print(titles)
         print("\n")
-        print(titlesScore)
+        #print(titlesScore)
+
         return totalScore
 
     def appendCount(self, input_dict):
@@ -241,3 +237,26 @@ class Fetch:
     def writeResults(self, file, output_dict):
         file.write(output_dict)
         file.close()
+
+
+def reddit_process(queries, qualifying_terms):
+    print('-----Processing queries through REDDIT API:-----\n')
+
+    timest = "month"
+    subreddit = "all"
+    sort = "relevance"
+
+    localTags = {}
+    localTags.update(globalTags)
+
+    resultsDict = {}
+
+    for query in queries:
+        print("---Processing the query: " + query + "---")
+        print('\n')
+
+        fetch = Fetch(query, subReddit=subreddit, timestamp=timest, tags=localTags, sortP=sort)
+        resultsDict[query] = fetch.getPopularityScore(limit=2)
+
+
+    return resultsDict
