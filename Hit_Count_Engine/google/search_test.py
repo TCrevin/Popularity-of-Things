@@ -1,9 +1,13 @@
 import requests, json, time
-
-# from collections import OrderedDict
 import gtab
 from bs4 import BeautifulSoup
 from hiddenprints import HiddenPrints
+import regex as re
+
+# Regex for finding URLs. Source: https://gist.github.com/winzig/8894715
+# group1: optional URL scheme
+# group2: rest of the URL
+URL_PATTERN = r"(?i)\b(https?:\/{1,3})?((?:(?:[\w.\-]+\.(?:[a-z]{2,13})|(?<=http:\/\/|https:\/\/)[\w.\-]+)\/)(?:[^\s()<>{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))+(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’])|(?:(?<!@)(?:\w+(?:[.\-]+\w+)*\.(?:[a-z]{2,13})|(?:(?:[0-9](?!\d)|[1-9][0-9](?!\d)|1[0-9]{2}(?!\d)|2[0-4][0-9](?!\d)|25[0-5](?!\d))[.]?){4})\b\/?(?!@)(?:[^\s()<>{}\[\]]+|\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\))*(?:\([^\s()]*?\([^\s()]+\)[^\s()]*?\)|\([^\s]+?\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’])?))"
 
 
 class Fetch(object):
@@ -91,13 +95,13 @@ class Fetch(object):
         for link in links:
             refs[link] = list()
             # Could use faster 3rd-party Python parser: lxml
-            soup = BeautifulSoup(requests.get(link), "html.parser")
-            for refs in soup.find_all("a"):
-                href = refs.get("href")
-                # TODO: check if relevant
-                # if href in yamlfile:
-                # refs[link].append(href)
-                refs[link].append(href)
+            html_text = requests.get(link).text
+            soup = BeautifulSoup(html_text, "html.parser")
+            # for shref in soup.find_all("a", attrs=attrs, string=re.compile(link_pattern)):
+            aa = soup.find_all("a", {"href": re.compile(URL_PATTERN)})
+            for a in aa:
+                # print(a["href"])
+                refs[link].append(a["href"])
 
 
 def main():
@@ -161,7 +165,7 @@ def main():
         links = set()
         # print(custom.items)
         for page in search.items:
-            links.update([item["displayLink"] for item in search.items[page]])
+            links.update([item["link"] for item in search.items[page]])
         print("\nUnique links:\n" + "------------------------")
         print(links)
         print("\n\nGive a search term or 'exit' to stop the program.")
