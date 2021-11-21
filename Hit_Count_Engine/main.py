@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from reddit.reddit_api import reddit_process
+from twitter.twitter_main import twitter_process
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -41,15 +42,12 @@ def processAPIprograms(queries, qualifying_terms):
     """
         Parameters
         ----------
-        param1 : string
-            A file to convert to python.
-
-        Returns two python lists
-         - queries
-         - qualifying terms
-        -------
         queries : list of string
         qualifying_terms : list of string
+
+        Returns an API dictionary of query/hitcount dictionaries
+        -------
+        resultDicts : dict
         """
     resultDicts = {}
 
@@ -66,6 +64,7 @@ def processAPIprograms(queries, qualifying_terms):
         if "instagram" in str(process):
             name = "instagram"
 
+        #API processing functions should have two list of strings (queries and qualifying_terms)
         resultDicts[name]=(process(queries, qualifying_terms))
 
     return resultDicts
@@ -104,10 +103,12 @@ def main():
 
     # ----------------------python results---------------------
     #TODO results = processAPIprograms(queries, qualifying_terms)
+    # results = {'API1' : {'query1': hitcount1}}
     results = {'reddit': {'java': 1, 'python': 5}, 'twitter': {'java': 2, 'python': 3}}
     print("The popularity results of" + str(current_date) + " are: ")
     print(results)
     print("\n")
+
 
     #-------------------------histograms----------------------
     # browsing APIs (reddit, twitter, ...)
@@ -132,7 +133,7 @@ def main():
     plt.savefig(os.path.join(hists_date_dir + '\\all.png'))
 
 
-    # Converting dict to JSON
+    #-------------------Converting dict to JSON-----------------
     json_object = json.dumps(results, indent = 4)
     #Saving the JSON file
     with open(json_outputs + '\\'  + str(current_date) + '.json', 'w') as f:

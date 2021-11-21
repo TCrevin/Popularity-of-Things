@@ -506,10 +506,5 @@
         "yersinia",
         "zaproxy",
         "zeek"
-    ],
-
-  "qualifying_terms": [
-    "programming",
-    "security"
-  ]
+    ]
 }
