@@ -8,7 +8,11 @@ def JSONinputToPython(filename):
 
     name = []
     for tool in tools:
-        name.append(tool['tool']['nick'])
+        try:
+            for site in tool['tool']['urls']:
+                name.append(site)
+        except KeyError:
+            print("No key 'URLS'")
 
     return name
 
@@ -21,5 +25,5 @@ json_names = {}
 json_names['queries']=names
 
 json_object = json.dumps(json_names, indent = 4)
-with open('simplified_nickname.json', 'w') as f:
+with open('simplified_websites.json', 'w') as f:
     f.write(json_object)
