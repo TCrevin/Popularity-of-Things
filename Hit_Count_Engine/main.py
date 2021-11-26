@@ -3,14 +3,14 @@ import json
 from pathlib import Path
 
 from reddit.reddit_api import reddit_process
-from twitter.twitter_main import twitter_process
+from twitter.twitter import twitter_process
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 import datetime
 
-processes = [reddit_process]
+processes = [reddit_process, twitter_process]
 
 
 
@@ -65,7 +65,9 @@ def processAPIprograms(queries, qualifying_terms):
             name = "instagram"
 
         #API processing functions should have two list of strings (queries and qualifying_terms)
+        print("-----Processing queries through " + name + " API is starting:-----\n")
         resultDicts[name]=(process(queries, qualifying_terms))
+        print("-----Processing queries through " + name + " API has ended:-----\n")
 
     return resultDicts
 
@@ -102,15 +104,22 @@ def main():
 
 
     # ----------------------python results---------------------
-    #TODO results = processAPIprograms(queries, qualifying_terms)
-    # results = {'API1' : {'query1': hitcount1}}
-    results = {'reddit': {'java': 1, 'python': 5}, 'twitter': {'java': 2, 'python': 3}}
-    print("The popularity results of" + str(current_date) + " are: ")
-    print(results)
-    print("\n")
+    #TODO change queries to real queries from JSON
+    queries = ["python", "java"]
+    results = processAPIprograms(queries, qualifying_terms)
+    #results = {'reddit': {'java': 1, 'python': 5}, 'twitter': {'java': 2, 'python': 3}}
+    merged_results = {key: 0 for key in queries}
+    for counts in results.values():
+        for k, v in counts.items():
+            merged_results[k] += v
 
 
-    #-------------------------histograms----------------------
+    print("The popularity results of " + str(current_date) + " are: ")
+    print("For each API: " + str(results))
+    print("Merged results: " + str(merged_results))
+
+
+    #-------------------------histograms for each API----------------------
     # browsing APIs (reddit, twitter, ...)
     for API, API_res in results.items():
         # plotting a histogram (popularity in function of queries) for a particular API
@@ -118,10 +127,21 @@ def main():
 
         ax.bar(list(API_res.keys()), API_res.values())
 
-        ax.set_ylabel('Popularity Count')
+        ax.set_ylabel('Popularity Count of ' + str(API))
         ax.set_title('Popularity Count by Query')
 
         plt.savefig(os.path.join(hists_date_dir + '\\' + API + '.png'))
+
+    # -------------------------merged API histograms----------------------
+    # plotting a histogram (popularity in function of queries) for a particular API
+    fig, ax = plt.subplots()
+
+    ax.bar(list(merged_results.keys()), merged_results.values())
+
+    ax.set_ylabel('Merged Popularity Count of every APIs')
+    ax.set_title('Popularity Count by Query')
+
+    plt.savefig(os.path.join(hists_date_dir + '\\merged_all.png'))
 
 
     # plotting a grouped histogram (popularity in function of queries) for every used API
@@ -130,7 +150,7 @@ def main():
                                     , legend=True)
     plt.ylabel('Popularity Count')
     plt.title('Popularity Count by Query, grouped by used API')
-    plt.savefig(os.path.join(hists_date_dir + '\\all.png'))
+    plt.savefig(os.path.join(hists_date_dir + '\\grouped_all.png'))
 
 
     #-------------------Converting dict to JSON-----------------

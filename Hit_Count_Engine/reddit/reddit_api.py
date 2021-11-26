@@ -182,7 +182,7 @@ class Fetch:
                 #score of the submission
                 titlesScore[submission.title] = totalScore-ts
                 
-                print("Searching for corresponding posts, please wait...")
+                #print("Searching for corresponding posts, please wait...")
                 
                 #limit of limit submissions
                 if i>=limit:
@@ -191,7 +191,7 @@ class Fetch:
                  
         print("\nPopularity of " + self.query + " : " + str(totalScore))
         #print(titles)
-        print("\n")
+        #print("\n")
         #print(titlesScore)
 
         return totalScore
@@ -240,23 +240,19 @@ class Fetch:
 
 
 def reddit_process(queries, qualifying_terms):
-    print('-----Processing queries through REDDIT API:-----\n')
 
     timest = "month"
     subreddit = "all"
     sort = "relevance"
 
-    localTags = {}
-    localTags.update(globalTags)
+    localTags = {key: 5 for key in qualifying_terms}
+    #localTags.update(globalTags)
 
     resultsDict = {}
 
     for query in queries:
-        print("---Processing the query: " + query + "---")
-        print('\n')
 
         fetch = Fetch(query, subReddit=subreddit, timestamp=timest, tags=localTags, sortP=sort)
         resultsDict[query] = fetch.getPopularityScore(limit=2)
-
 
     return resultsDict
