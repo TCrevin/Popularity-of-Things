@@ -11,6 +11,7 @@ yaml_path = "~" # TODO: Replace with Docker filesystem
 
 # TODO: Implement ProcessPoolExecutor to spawn child processes DONE
 # TODO: Get names of tools from tools.yaml and iterate through assigning 'search_name'
+# TODO: Get files from dir, use filenames as input
 def getNames(): # TODO: Read directly from YAML
     with open("tools.json", "r") as f:
         print("Getting links and corresponding names")
@@ -21,11 +22,14 @@ def getNames(): # TODO: Read directly from YAML
             try:
                 #print("Key: ", tool["tool"]["nick"], "URL: ", tool["tool"]["urls"])
                 tool_dict[tool["tool"]["nick"]] = tool["tool"]["urls"]
+                os.mkdir('/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}'.format(tool["tool"]["nick"]))
             except KeyError:
                 #print(tool)
-                print("KeyError raised at {}.\nSkipping....".format(tool))
+                #print("KeyError raised at {}.\nSkipping....".format(tool))
                 #print("Keyerror")
                 pass
+            except FileExistsError:
+                tool_dict[tool["tool"]["nick"]] = tool["tool"]["urls"]
 
         print(tool_dict)
 
@@ -35,18 +39,11 @@ def linksFromFile():
         data = json.load(f)
         tools = data["tools"]
         for tool in tools:
-            #print(tool["tools"]["urls"])
             try:
-                #print(tool["tool"]["urls"])
                 links.append(tool)
             except KeyError:
-                #print(tool)
-                #print("KeyError!! raised at {}.\nSkipping....".format(tool))
-                print("Keyerror")
                 pass
-        print("List of links: ", links)
         return links
-
 
 #search_name = "Nmap" # Reference what we're using # TODO ^ append items to a list
 #master_link = "https://wireshark.org"
@@ -90,6 +87,7 @@ def search(text, pattern):
         if z[i] == len(pattern):
             print("Gottem badabing.")
             return True
+
 def linkInLink(links, search_name): # Get count of mentions of name in links
     mentions = 0
     for link in links:
@@ -109,8 +107,8 @@ def linkInLink(links, search_name): # Get count of mentions of name in links
     print("Number of mentions for {}".format(search_name))
     return mentions
 
-def linkList(input_link):
-    html = request.urlopen(input_link)
+def linkList(master_links):
+    html = request.urlopen(master_links)
     text = html.read()
     list_of_links = []
     plaintext = text.decode('utf8')
@@ -132,11 +130,40 @@ def linkList(input_link):
     print("Called.")
     return list_of_links
 
+def getSources(tool_name, tool_links): # TODO: Reformat into Docker format
+    path = os.path.join("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine", tool_name)
+    for link in tool_links:
+        html = requests.get(link, 'html.parser')
+        try:
+            filename = os.path.join(path, link+".txt")
+            with open(filename, 'w') as f:
+                f.write(html.text)
+                f.close()
+        except FileNotFoundError:
+            filename = os.path.join(path, link + ".txt")
+            with open(filename, 'x') as f:
+                f.write(html.text)
+                f.close()
 
+def linksFromFile(filename):
+    list_of_links = []
+    with open(os.path.join("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/google_queries", filename)) as f:
+        for line in f:
+            list_of_links.append(line)
+    return list_of_links
 
+def queryNames(): # TODO: Reformat into Docker format
+    names = os.listdir("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/google_queries")
+    files = []
+    for name in names:
+        print("Debug name: ", name)
+        name.replace(".json", "")
+        files.append(name)
+    for file in files:
+        print("File: ", file)
+    return files
 
-#for link in list_of_links:
-def multinilkki_teloittaja(link, name): # TODO: Check if page is readable before using requests and get the header
+def multinilkki_teloittaja(link, name):
     try:
         #list_of_results.append(linkInLink(link))
         if linkInLink(link, name):
@@ -159,6 +186,7 @@ def multinilkki_teloittaja(link, name): # TODO: Check if page is readable before
     #except:
     #    print("An unknown error occurred at {}".format(link))
         #continue
+
 def execute():
     list_of_results = []
     debug_list_links = linkList(master_link)
@@ -185,6 +213,8 @@ def execute():
     #TODO : from score
 t1 = time.time()
 master_links = getNames() # returns dict "tool": "url"
-
-links = linksFromFile()
+for filename in queryNames(): # TODO: Filter link output lists from additional characters like '\n', ',' etc.
+    print(linksFromFile(filename))
+#links = linksFromFile()
+#print(queryNames())
 #for i in master_links:
