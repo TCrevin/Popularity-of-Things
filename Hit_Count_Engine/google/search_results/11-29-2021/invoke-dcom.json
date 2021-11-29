@@ -1,4 +1,5 @@
 [
+    "168000",
     "https://github.com/EmpireProject/Empire/blob/master/data/module_source/lateral_movement/Invoke-DCOM.ps1",
     "https://enigma0x3.net/2017/01/23/lateral-movement-via-dcom-round-2/",
     "https://www.mdsec.co.uk/2020/09/i-like-to-move-it-windows-lateral-movement-part-2-dcom/",

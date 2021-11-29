@@ -1,4 +1,5 @@
 [
+    "61800",
     "https://github.com/gdedrouas/Exchange-AD-Privesc",
     "https://dirkjanm.io/abusing-exchange-one-api-call-away-from-domain-admin/",
     "https://github.com/gdedrouas/Exchange-AD-Privesc/blob/master/DomainObject/Fix-DomainObjectDACL.ps1",
