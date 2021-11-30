@@ -53,18 +53,36 @@ def normalize(results):
         for k in d:
             d[k] = d[k] * factor
 
+def getMergedResults(results, queries):
+    """
+    Parameters
+    ----------
+    results: An API dictionary of query/hitcount dictionaries
+    queries : list of the queries string
+
+    Returns a merged dictionary of query/hitcount values
+    -------
+    resultDicts : dict
+    """
+    merged_results = {key: 0 for key in queries}
+    for counts in results.values():
+        for k, v in counts.items():
+            merged_results[k] += v
+    return merged_results
+
+
 def processAPIprograms(queries, qualifying_terms, norm=True):
     """
-        Parameters
-        ----------
-        queries : list of string
-        qualifying_terms : list of string
-        norm : True by default, if True, normalize query/hitcount dictionaries values
+    Parameters
+    ----------
+    queries : list of string
+    qualifying_terms : list of string
+    norm : True by default, if True, normalize query/hitcount dictionaries values
 
-        Returns an API dictionary of query/hitcount dictionaries
-        -------
-        resultDicts : dict
-        """
+    Returns an API dictionary of query/hitcount dictionaries
+    -------
+    resultDicts : dict
+    """
     resultDicts = {}
 
     for process in  processes:
@@ -90,7 +108,25 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
 
     return resultDicts
 
+def setDirectories(current_date):
+    """
+    Parameters
+    ----------
+    current_date : current date time in datetime.date format
 
+    Returns directories needed to save the final results
+    """
+    Hit_Count_Engine = os.getcwd()
+    in_out_results = Hit_Count_Engine + "\in_out_results"
+    graphs = in_out_results + "\graphs"
+    hists = graphs + "\hists"
+    json_outputs = in_out_results + "\json_outputs"
+
+    Path(hists + '\\' + str(current_date)).mkdir(parents=True, exist_ok=True)
+
+    hists_date_dir = hists + '\\' + str(current_date)
+
+    return Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir
 
 
 
@@ -107,44 +143,34 @@ def main():
     print('User qualifying terms: ', qualifying_terms)
     print('\n')
 
-
-
-    # current date
+    # Current date
     current_date = datetime.date.today()
 
-    # directories
-    Hit_Count_Engine = os.getcwd()
-    in_out_results = Hit_Count_Engine + "\in_out_results"
-    graphs = in_out_results + "\graphs"
-    hists = graphs + "\hists"
-    json_outputs = in_out_results + "\json_outputs"
+    # Directories
+    Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = setDirectories(current_date)
 
-    Path(hists + '\\' + str(current_date)).mkdir(parents=True, exist_ok=True)
-
-    hists_date_dir = hists + '\\' + str(current_date)
 
 
 
     # ----------------------python results---------------------
     #TODO change queries to real queries from JSON
+
+    # Test input, to change
     queries = ["python", "java"]
     qualifying_terms = ["comput", "program", "code", "develop"]
-    results = processAPIprograms(queries, qualifying_terms)
-    #results = {'reddit': {'java': 1, 'python': 5}, 'twitter': {'java': 2, 'python': 3}}
 
+    # Normalized Results by API
+    results = processAPIprograms(queries, qualifying_terms, norm=True)
 
-
-
-
-    merged_results = {key: 0 for key in queries}
-    for counts in results.values():
-        for k, v in counts.items():
-            merged_results[k] += v
+    # Merged Normalized Results of every used API
+    merged_results = getMergedResults(results, queries)
 
 
     print("The popularity results of " + str(current_date) + " are: ")
     print("For each API: " + str(results))
     print("Merged results: " + str(merged_results))
+
+
 
 
     #-------------------------histograms for each API----------------------
