@@ -50,6 +50,7 @@ def main():
 
         # Loop
         for page in range(10):
+            break  # Fix missing totalResults, skip loop
             print(f"{nick} #{page+1}...", end=" ")
             start = 10 * page + 1
             start = 1
@@ -82,6 +83,33 @@ def main():
         # Save results to json file
         save_path = "search_results/" + date + "/" + nick + ".json"
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        with open(save_path, "r") as stream:
+            urls = json.load(stream)
+        try:
+            test_int = int(urls[0])
+            print(f"{nick} OK")
+            continue
+        except ValueError:
+            url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&q={query}"
+            try:
+                response = requests.request("GET", url)
+                response.raise_for_status()
+            except HTTPError as http_err:
+                print(f"HTTP error occurred: {http_err}")
+            except Exception as err:
+                print(f"Other error occurred: {err}")
+            else:
+                pass
+            res_text = json.loads(response.text)
+            try:
+                totRes = res_text["searchInformation"]["totalResults"]
+            except KeyError:
+                print(json.dumps(res_text))
+                continue
+            urls.insert(0, totRes)
+            print(f"{nick}'s total results: {totRes}")
+            sleep(0.2)
+
         with open(save_path, "w") as outfile:
             json.dump(urls, outfile, sort_keys=True, indent=4)
 
