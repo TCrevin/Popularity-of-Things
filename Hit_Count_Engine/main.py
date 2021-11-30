@@ -38,12 +38,28 @@ def JSONinputToPython(filename):
     # qualifying_terms = ['qt1', 'qt2']
     return queries, qualifying_terms
 
-def processAPIprograms(queries, qualifying_terms):
+
+def normalize(results):
+    """
+     Parameters
+    ----------
+    results: An API dictionary of query/hitcount dictionaries
+
+    Normalize data for each API dictionnary so it is easier to read the final results
+    -------
+    """
+    for d in results.values():
+        factor = 100.0 / sum(d.values())
+        for k in d:
+            d[k] = d[k] * factor
+
+def processAPIprograms(queries, qualifying_terms, norm=True):
     """
         Parameters
         ----------
         queries : list of string
         qualifying_terms : list of string
+        norm : True by default, if True, normalize query/hitcount dictionaries values
 
         Returns an API dictionary of query/hitcount dictionaries
         -------
@@ -69,7 +85,13 @@ def processAPIprograms(queries, qualifying_terms):
         resultDicts[name]=(process(queries, qualifying_terms))
         print("-----Processing queries through " + name + " API has ended:-----\n")
 
+    if norm:
+        normalize(resultDicts)
+
     return resultDicts
+
+
+
 
 
 
@@ -106,8 +128,14 @@ def main():
     # ----------------------python results---------------------
     #TODO change queries to real queries from JSON
     queries = ["python", "java"]
+    qualifying_terms = ["comput", "program", "code", "develop"]
     results = processAPIprograms(queries, qualifying_terms)
     #results = {'reddit': {'java': 1, 'python': 5}, 'twitter': {'java': 2, 'python': 3}}
+
+
+
+
+
     merged_results = {key: 0 for key in queries}
     for counts in results.values():
         for k, v in counts.items():
