@@ -7,13 +7,16 @@ import threading
 from reddit.reddit_api import reddit_process
 from twitter.twitter import twitter_process
 
+from operator import itemgetter
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 import datetime
 import time
 
-processes = [reddit_process, twitter_process]
+#processes = [reddit_process, twitter_process]
+processes = [twitter_process]
 
 
 
@@ -159,14 +162,12 @@ def main():
     Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = getDirectories(current_date)
 
 
-
-
     # ----------------------python results---------------------
     #TODO change queries to real queries from JSON
 
     # Test input, to comment
-    # queries = ["python", "java"]
-    # qualifying_terms = ["comput", "program", "code", "develop"]
+    queries = ["python", "java", "golang"]
+    qualifying_terms = ["comput", "program", "code", "develop"]
 
     #Threading ?
     #results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
@@ -180,6 +181,18 @@ def main():
     # Merged Normalized Results of every used API
     merged_results = getMergedResults(results, queries)
 
+    # Top N results to display on histograms
+    N = 10
+
+    merged_top_results = dict(sorted(merged_results.items(), key = itemgetter(1), reverse = True)[:N])
+    top_results = {api:{} for api in results.keys()}
+    for api in results.keys():
+        for key in merged_top_results.keys():
+            top_results[api][key] = results[api][key]
+
+    #print(merged_top_results)
+    #print(top_results)
+
 
     print("The popularity results of " + str(current_date) + " are: ")
     print("For each API: " + str(results))
@@ -190,7 +203,7 @@ def main():
 
     #HISTOGRAMS for each API
     # browsing APIs (reddit, twitter, ...)
-    for API, API_res in results.items():
+    for API, API_res in top_results.items():
         # plotting a histogram (popularity in function of queries) for a particular API
         fig, ax = plt.subplots()
 
@@ -205,7 +218,7 @@ def main():
     # plotting a histogram (popularity in function of queries) for a particular API
     fig, ax = plt.subplots()
 
-    ax.bar(list(merged_results.keys()), merged_results.values())
+    ax.bar(list(merged_top_results.keys()), merged_top_results.values())
 
     ax.set_ylabel('Merged Popularity Count of every APIs')
     ax.set_title('Popularity Count by Query')
@@ -214,7 +227,7 @@ def main():
 
 
     #grouped HISTOGRAM (popularity in function of queries) for every used API
-    fig = pd.DataFrame(results).plot(kind='bar'
+    fig = pd.DataFrame(top_results).plot(kind='bar'
                                     , title="Results"
                                     , legend=True)
     plt.ylabel('Popularity Count')

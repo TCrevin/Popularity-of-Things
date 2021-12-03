@@ -509,7 +509,10 @@
     ],
 
   "qualifying_terms": [
-    "programming",
-    "security"
+        "programming",
+        "security",
+        "computer",
+        "develop",
+        "compsec"
   ]
 }
