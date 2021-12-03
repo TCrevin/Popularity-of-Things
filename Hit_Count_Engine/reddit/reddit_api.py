@@ -30,7 +30,6 @@ globalTags = {"program":3, "code":3, "comput":3, "develop":3, "dev":3,
 
 def translateQuery(query):
     """
-
     Parameters
     ----------
     query : string
@@ -40,7 +39,6 @@ def translateQuery(query):
     -------
     query : string
         A translated query.
-
     """
     """Translate some character which are unreadable by reddit API"""
     tr = {'+':"p", '#':"sharp"}
@@ -52,7 +50,6 @@ def translateQuery(query):
 
 def hasTag(subObject, tagDict=globalTags):
     """
-
     Parameters
     ----------
     subObject : string
@@ -66,7 +63,6 @@ def hasTag(subObject, tagDict=globalTags):
     -------
     tagScore : int
         A integer representation of the relativness of a submission object (title, selftext, comment).
-
     """
 
     tagScore=0
@@ -81,7 +77,6 @@ class Fetch:
     
     def __init__(self, query, subReddit='all', timestamp='week', tags=globalTags, sortP="relevance"):
         """
-
         Parameters
         ----------
         query : string
@@ -96,7 +91,6 @@ class Fetch:
         Returns an instance of a fetch class
         -------
         None.
-
         """
         
         self.query = query
@@ -116,7 +110,7 @@ class Fetch:
         process = subprocess.Popen(['ls', self.getResultsDir()], stdout=subprocess.PIPE)
         return process.communicate()[0].decode('utf-8')
 
-    def getPopularityScore(self, limit=10):
+    def getPopularityScore(self, limit=100):
         """
 
         Parameters
@@ -189,7 +183,7 @@ class Fetch:
                     break
                 i+=1
                  
-        print("\nPopularity of " + self.query + " : " + str(totalScore))
+        print("Popularity of " + self.query + " : " + str(totalScore) +"\n")
         #print(titles)
         #print("\n")
         #print(titlesScore)
@@ -240,8 +234,18 @@ class Fetch:
 
 
 def reddit_process(queries, qualifying_terms):
+    """
+    Parameters
+    ----------
+    queries: list of string, to measure their popularity
+    qualifying_terms = list of string, to check if they appear in the queries results 
 
-    timest = "month"
+    Returns a dictionary of query/popularity results
+    -------
+    resultsDict : dict
+    """
+
+    timest = "week"
     subreddit = "all"
     sort = "relevance"
 
@@ -253,6 +257,6 @@ def reddit_process(queries, qualifying_terms):
     for query in queries:
 
         fetch = Fetch(query, subReddit=subreddit, timestamp=timest, tags=localTags, sortP=sort)
-        resultsDict[query] = fetch.getPopularityScore(limit=2)
+        resultsDict[query] = fetch.getPopularityScore()
 
     return resultsDict

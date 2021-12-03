@@ -2,6 +2,8 @@ import os
 import json
 from pathlib import Path
 
+import threading
+
 from reddit.reddit_api import reddit_process
 from twitter.twitter import twitter_process
 
@@ -9,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import datetime
+import time
 
 processes = [reddit_process, twitter_process]
 
@@ -100,6 +103,10 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
 
         #API processing functions should have two list of strings (queries and qualifying_terms)
         print("-----Processing queries through " + name + " API is starting:-----\n")
+
+        """th = threading.main_thread(target=process, args="qualifying_terms")
+        th.start()
+        resultDicts[name]=th"""
         resultDicts[name]=(process(queries, qualifying_terms))
         print("-----Processing queries through " + name + " API has ended:-----\n")
 
@@ -108,7 +115,7 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
 
     return resultDicts
 
-def setDirectories(current_date):
+def getDirectories(current_date):
     """
     Parameters
     ----------
@@ -132,6 +139,8 @@ def setDirectories(current_date):
 
 
 def main():
+    start_time = time.time()
+
 
     print("-----------This is the main script processing-----------")
 
@@ -147,7 +156,7 @@ def main():
     current_date = datetime.date.today()
 
     # Directories
-    Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = setDirectories(current_date)
+    Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = getDirectories(current_date)
 
 
 
@@ -155,9 +164,15 @@ def main():
     # ----------------------python results---------------------
     #TODO change queries to real queries from JSON
 
-    # Test input, to change
-    queries = ["python", "java"]
-    qualifying_terms = ["comput", "program", "code", "develop"]
+    # Test input, to comment
+    # queries = ["python", "java"]
+    # qualifying_terms = ["comput", "program", "code", "develop"]
+
+    #Threading ?
+    #results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
+    #results.start()
+    #results.join()
+    #print(results)
 
     # Normalized Results by API
     results = processAPIprograms(queries, qualifying_terms, norm=True)
@@ -171,9 +186,9 @@ def main():
     print("Merged results: " + str(merged_results))
 
 
+    #-------------------------HISTOGRAMS-----------------------
 
-
-    #-------------------------histograms for each API----------------------
+    #HISTOGRAMS for each API
     # browsing APIs (reddit, twitter, ...)
     for API, API_res in results.items():
         # plotting a histogram (popularity in function of queries) for a particular API
@@ -186,7 +201,7 @@ def main():
 
         plt.savefig(os.path.join(hists_date_dir + '\\' + API + '.png'))
 
-    # -------------------------merged API histograms----------------------
+    #merged API HISTOGRAMS
     # plotting a histogram (popularity in function of queries) for a particular API
     fig, ax = plt.subplots()
 
@@ -198,7 +213,7 @@ def main():
     plt.savefig(os.path.join(hists_date_dir + '\\merged_all.png'))
 
 
-    # plotting a grouped histogram (popularity in function of queries) for every used API
+    #grouped HISTOGRAM (popularity in function of queries) for every used API
     fig = pd.DataFrame(results).plot(kind='bar'
                                     , title="Results"
                                     , legend=True)
@@ -207,11 +222,19 @@ def main():
     plt.savefig(os.path.join(hists_date_dir + '\\grouped_all.png'))
 
 
+
+
     #-------------------Converting dict to JSON-----------------
     json_object = json.dumps(results, indent = 4)
     #Saving the JSON file
     with open(json_outputs + '\\'  + str(current_date) + '.json', 'w') as f:
         f.write(json_object)
+
+
+
+    # Execution time measurment
+    end_time = time.time()
+    print('Duration: {}'.format(end_time - start_time))
 
 if __name__ == "__main__":
     main()
