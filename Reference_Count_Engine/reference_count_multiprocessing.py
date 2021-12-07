@@ -113,24 +113,51 @@ def linkInLink(links,
         print("Forbidden 403 at :", links)
 
 
-# TODO: Something wrong here. FIXME FIXME FIXME FIXME FIXME FIXME
-def linkInFile(name,
-               search_urls):  # Input the source file (link-name) name and list of links associated with name
-    mentioned = False
+
+def linkInFile(name, # TODO: Do filtering HERE
+               search_url):  # Input the source file (link-name) name and list of links associated with name
+    mentioned = 0
+    a=False
+    no = 0
     path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name)
-    for file in os.listdir(path):
-        print(file)
+    #print("Search urls: ", search_url)
+    #print("Files in {}: {} ".format(name, os.listdir(path)))
+    for numerator, file in enumerate(os.listdir(path)):
+        #print("{}: Checking for {} from {}".format(numerator, search_url, file))
+
         try:
-            with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name)+file) as req:  # Open source file (filename is link.txt)
+            with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file)) as req:  # Open source file (filename is link.txt)
+                #print("Opened: ", file)
                 #print("Checking: ", "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name)+file)
                 source = req.readlines()
                 h = ",".join(source)
-                for link in search_urls:  # If the link is found, break. No need to check for any more links
-                    if search(h, link):
-                        mentioned = True
+                #print("Checking if {} in h.".format(search_url))
+                if search(h, search_url):
+                    mentioned += 1
+                    a=True
+                    req.close()
+                else:
+                    #print("No mention")
+                    no+=1
+
+
         except Exception as e:
             print("Error {} occurred".format(e))
-        return mentioned  # Return
+    #print("No mentions: ", no)
+    print("Mentions of {} in files related to {}: {}".format(search_url, name, mentioned))
+    with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/results/{}.txt".format(name+"_results.txt"), "rw+") as f:
+        read_count = f.readline() # FIXME: Something wrong with read_count and read_count + mentioned
+        if read_count == None:
+            print("BBBBBBBBBBBBB")
+            f.write(str(mentioned))
+        else:
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            print("Read count: ", read_count)
+            print("Mentioned: ", mentioned)
+            f.truncate()
+            f.write(str(int(read_count)+mentioned))
+            f.close()
+    return a  # Return
 
 
 # TODO: Gather up
@@ -188,11 +215,6 @@ def getSources(tool_name, link):  # TODO: Reformat into Docker format
     except requests.exceptions.ReadTimeout:
         print("Timeout at {}".format(link))
         pass
-    except Exception as e:
-        print("An error occurred at {}".format(link))
-        print(e)
-        pass
-
 
 def linksFromGoogleFiles(filename):
     list_of_links = []
@@ -217,11 +239,8 @@ def queryNames():  # TODO: Reformat into Docker format
         "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Hit_Count_Engine/google/search_results/30-11-2021")
     files = []
     for name in names:
-        # print("Debug name: ", name)
         name.replace(".json", "")
         files.append(name)
-    # for file in files:
-    # print("File: ", file)
     return files
 
 
@@ -246,13 +265,10 @@ def returner(link, name):
     except KeyboardInterrupt:
         print("Exiting program..")
         exit()
-    except Exception as e:
-        print("An unknown error occurred at {}".format(link))
-        print(e)
-        pass
 
 
 def returner2(filename, home_urls):  # Input one link and then the name and search_urls list from tools.json
+    print("Checking: ", filename)
     try:  # TODO: Get S, St, Sr and Sd here (see page 3, formula 1)
         if linkInFile(filename, home_urls):  # TODO: Rip
             return 1
@@ -274,26 +290,16 @@ def tempDict():
     # print(key, " : ", value)
     return aa
 
-
-def execute(filename, home_urls): # TODO: Input links from tools.json and
-    list_of_results = []
-    results = 0
-    with ThreadPoolExecutor() as executor:  # Task is I/O bound, not CPU bound, use threads.
-        for link, result in zip(filename, executor.map(returner2, repeat(filename), home_urls)):
-            list_of_results.append(result)
-
-    for result in list_of_results:  # sum
-        if result != None:
-            results += result
-        else:
-            pass
-    print("Count of mentions of {} in the links provided: {}".format(home_urls, results))
+def execute(filename, home_urls):
+    with ProcessPoolExecutor(max_workers=80) as executor:  # Task is I/O bound, not CPU bound, use threads.
+        executor.map(returner2, repeat(filename), home_urls)
 
 def execute2(input_link, filename):
     list_of_results = []
     results = 0
     with ThreadPoolExecutor() as executor:  # Task is I/O bound, not CPU bound, use threads.
         for link, result in zip(input_link, executor.map(returner2, input_link, repeat(filename))):
+            print("\n\n----------------")
             list_of_results.append(result)
 
     for result in list_of_results:  # sum
@@ -301,44 +307,20 @@ def execute2(input_link, filename):
             results += result
         else:
             pass
-    print("Count of mentions of {} in the links provided: {}".format(filename, results))
 
 
 def getPages():
     aa = tempDict()
-    # for number, i in enumerate(aa.items()):
-    # print(number, ": ", i)
+
     for filename in queryNames():
         aa[filename] = linksFromGoogleFiles(filename)
     with ThreadPoolExecutor() as executor:
         for filename, links in aa.items():
             list(tqdm(executor.map(getSources, repeat(filename), links), total=len(links)))
-    # print("Execution time: ", time.time() - t1)
 
 
 t1 = time.time()
-# links = linksFromFile()
-# asd = linksFromGoogleFiles()
-# master_links = getNames() # returns dict "tool": "url"
-# with ThreadPoolExecutor() as executor:
-# for name, link in master_links:
-# beep = linksFromGoogleFiles()
-#    search_term = filename.replace(".json", "")
-#    print("SEARCH TERM: ", search_term)
-# for link in linksFromGoogleFiles(filename):
-# print("{}: ".format(filename), linksFromGoogleFiles(filename))
-# print(filename, " :",linksFromGoogleFiles(filename))
-#    execute(linksFromGoogleFiles(filename), search_term)
-#    #execute(linksFromGoogleFiles(filename), search_term)
-# print("AA: ", aa)
 thing = getNames()
 for tool, homeurls in thing.items():
     execute(tool, homeurls)
-    #print(tool, ": ", homeurls)
-# TODO: IMPLEMENT ProcessPoolExecutor by dividing contents of file count n with cpu_count
-#getPages() # This downloads all the pages
-#for tool, homeurls in thing.items():
-#    execute(tool, homeurls)
-# getNames()
 print("Total execution time: ", time.time() - t1)
-# for i in master_links:
