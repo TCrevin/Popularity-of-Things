@@ -15,8 +15,7 @@ import pandas as pd
 import datetime
 import time
 
-#processes = [reddit_process, twitter_process]
-processes = [twitter_process]
+processes = [twitter_process, reddit_process]
 
 
 
@@ -110,6 +109,7 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
         """th = threading.main_thread(target=process, args="qualifying_terms")
         th.start()
         resultDicts[name]=th"""
+
         resultDicts[name]=(process(queries, qualifying_terms))
         print("-----Processing queries through " + name + " API has ended:-----\n")
 
@@ -166,8 +166,8 @@ def main():
     #TODO change queries to real queries from JSON
 
     # Test input, to comment
-    queries = ["python", "java", "golang"]
-    qualifying_terms = ["comput", "program", "code", "develop"]
+    #queries = ["python", "java", "golang", "javascript"]
+    #qualifying_terms = ["comput", "program", "code", "develop"]
 
     #Threading ?
     #results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
