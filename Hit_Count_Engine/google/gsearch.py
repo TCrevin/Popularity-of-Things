@@ -24,7 +24,7 @@ import requests, json
 from requests.models import HTTPError
 import yaml
 from random import random
-from time import sleep
+from time import sleep, time
 from datetime import datetime
 
 # Google API key and Search engine ID
@@ -32,8 +32,8 @@ key = "AIzaSyBDCfGzExKZN_hLv1XYCuB4K_iZWdvpfR0"
 cx = "a400502691c2c4c3c"
 # Yaml DB path
 db_loc = "../../yaml_db/tools.yaml"
-# Maximum delay between failed consecutive requests (google)
-MAX_BACKOFF = 32
+
+exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
 
 now = datetime.now()
 date = now.strftime("%d-%m-%Y")
@@ -98,16 +98,20 @@ def getPageItems(query, page):
 
     Function sends REST request to the API and checks the items.
     If response and it's fields are valid, returns the list of urls.
-    Otherwise, it returns 'None'
+    Otherwise, it returns 'None' time module pro
 
     :param query: Search term used with the API
     :param page: The current page of items
     :return: Returns the list of URLs or 'None'
     """
+
     start = 10 * page + 1
     url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q={query}"
     results = []
-    n = 1
+
+    current_delay = 2
+    max_delay = 30
+
     while True:
         try:
             response = requests.request("GET", url)
@@ -115,8 +119,12 @@ def getPageItems(query, page):
         except HTTPError as http_err:
             # TODO: Throw a timeout if stuck in HTTPError for more than ~600(?) seconds
             print(f"HTTP error occurred: {http_err}")
-            sleep(min(2 ** n + round(random(), 3), MAX_BACKOFF))
-            n = n + 1
+            if current_delay > max_delay:
+                print("Too many retry attempts. Returning...")
+                return None
+            print("Waiting about", current_delay, "seconds before retrying.")
+            sleep(current_delay + round(random(), 3))
+            current_delay *= 2
             continue
         except Exception as err:
             print(f"Other error occurred: {err}\n\n")
