@@ -6,6 +6,7 @@ import threading
 
 from reddit.reddit_api import reddit_process
 from twitter.twitter import twitter_process
+from google.gpytrends import google_process
 
 from operator import itemgetter
 
@@ -15,8 +16,7 @@ import pandas as pd
 import datetime
 import time
 
-processes = [twitter_process, reddit_process]
-
+processes = [google_process, twitter_process, reddit_process]
 
 
 def JSONinputToPython(filename):
@@ -36,8 +36,8 @@ def JSONinputToPython(filename):
     # Opening JSON file
     with open(filename) as json_file:
         data = json.load(json_file)
-        queries = data['queries']
-        qualifying_terms = data['qualifying_terms']
+        queries = data["queries"]
+        qualifying_terms = data["qualifying_terms"]
 
     # queries = ['que1', 'que2']
     # qualifying_terms = ['qt1', 'qt2']
@@ -57,6 +57,7 @@ def normalize(results):
         factor = 100.0 / sum(d.values())
         for k in d:
             d[k] = d[k] * factor
+
 
 def getMergedResults(results, queries):
     """
@@ -90,8 +91,8 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
     """
     resultDicts = {}
 
-    for process in  processes:
-        name="API name undefined"
+    for process in processes:
+        name = "API name undefined"
         if "reddit" in str(process):
             name = "reddit"
         if "twitter" in str(process):
@@ -103,20 +104,25 @@ def processAPIprograms(queries, qualifying_terms, norm=True):
         if "instagram" in str(process):
             name = "instagram"
 
-        #API processing functions should have two list of strings (queries and qualifying_terms)
+        # API processing functions should have two list of strings (queries and qualifying_terms)
         print("-----Processing queries through " + name + " API is starting:-----\n")
 
         """th = threading.main_thread(target=process, args="qualifying_terms")
         th.start()
         resultDicts[name]=th"""
-
-        resultDicts[name]=(process(queries, qualifying_terms))
+        if name == "google":
+            # Category 314: Computer Science
+            category = "314"
+            resultDicts[name] = process(queries, category)
+        else:
+            resultDicts[name] = process(queries, qualifying_terms)
         print("-----Processing queries through " + name + " API has ended:-----\n")
 
     if norm:
         normalize(resultDicts)
 
     return resultDicts
+
 
 def getDirectories(current_date):
     """
@@ -132,28 +138,25 @@ def getDirectories(current_date):
     hists = graphs + "\hists"
     json_outputs = in_out_results + "\json_outputs"
 
-    Path(hists + '\\' + str(current_date)).mkdir(parents=True, exist_ok=True)
+    Path(hists + "\\" + str(current_date)).mkdir(parents=True, exist_ok=True)
 
-    hists_date_dir = hists + '\\' + str(current_date)
+    hists_date_dir = hists + "\\" + str(current_date)
 
     return Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir
-
-
 
 
 def main():
     start_time = time.time()
 
-
     print("-----------This is the main script processing-----------")
 
     # --------------input extraction & conversion----------------
-    input = JSONinputToPython('in_out_results/user_config.JSON')
+    input = JSONinputToPython("in_out_results/user_config.JSON")
     queries = input[0]
     qualifying_terms = input[1]
-    print('User queries: ', queries)
-    print('User qualifying terms: ', qualifying_terms)
-    print('\n')
+    print("User queries: ", queries)
+    print("User qualifying terms: ", qualifying_terms)
+    print("\n")
 
     # Current date
     current_date = datetime.date.today()
@@ -161,19 +164,18 @@ def main():
     # Directories
     Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = getDirectories(current_date)
 
-
     # ----------------------python results---------------------
-    #TODO change queries to real queries from JSON
+    # TODO change queries to real queries from JSON
 
     # Test input, to comment
-    #queries = ["python", "java", "golang", "javascript"]
-    #qualifying_terms = ["comput", "program", "code", "develop"]
+    # queries = ["python", "java", "golang", "javascript"]
+    # qualifying_terms = ["comput", "program", "code", "develop"]
 
-    #Threading ?
-    #results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
-    #results.start()
-    #results.join()
-    #print(results)
+    # Threading ?
+    # results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
+    # results.start()
+    # results.join()
+    # print(results)
 
     # Normalized Results by API
     results = processAPIprograms(queries, qualifying_terms, norm=True)
@@ -184,24 +186,22 @@ def main():
     # Top N results to display on histograms
     N = 10
 
-    merged_top_results = dict(sorted(merged_results.items(), key = itemgetter(1), reverse = True)[:N])
-    top_results = {api:{} for api in results.keys()}
+    merged_top_results = dict(sorted(merged_results.items(), key=itemgetter(1), reverse=True)[:N])
+    top_results = {api: {} for api in results.keys()}
     for api in results.keys():
         for key in merged_top_results.keys():
             top_results[api][key] = results[api][key]
 
-    #print(merged_top_results)
-    #print(top_results)
-
+    # print(merged_top_results)
+    # print(top_results)
 
     print("The popularity results of " + str(current_date) + " are: ")
     print("For each API: " + str(results))
     print("Merged results: " + str(merged_results))
 
+    # -------------------------HISTOGRAMS-----------------------
 
-    #-------------------------HISTOGRAMS-----------------------
-
-    #HISTOGRAMS for each API
+    # HISTOGRAMS for each API
     # browsing APIs (reddit, twitter, ...)
     for API, API_res in top_results.items():
         # plotting a histogram (popularity in function of queries) for a particular API
@@ -209,45 +209,38 @@ def main():
 
         ax.bar(list(API_res.keys()), API_res.values())
 
-        ax.set_ylabel('Popularity Count of ' + str(API))
-        ax.set_title('Popularity Count by Query')
+        ax.set_ylabel("Popularity Count of " + str(API))
+        ax.set_title("Popularity Count by Query")
 
-        plt.savefig(os.path.join(hists_date_dir + '\\' + API + '.png'))
+        plt.savefig(os.path.join(hists_date_dir + "\\" + API + ".png"))
 
-    #merged API HISTOGRAMS
+    # merged API HISTOGRAMS
     # plotting a histogram (popularity in function of queries) for a particular API
     fig, ax = plt.subplots()
 
     ax.bar(list(merged_top_results.keys()), merged_top_results.values())
 
-    ax.set_ylabel('Merged Popularity Count of every APIs')
-    ax.set_title('Popularity Count by Query')
+    ax.set_ylabel("Merged Popularity Count of every APIs")
+    ax.set_title("Popularity Count by Query")
 
-    plt.savefig(os.path.join(hists_date_dir + '\\merged_all.png'))
+    plt.savefig(os.path.join(hists_date_dir + "\\merged_all.png"))
 
+    # grouped HISTOGRAM (popularity in function of queries) for every used API
+    fig = pd.DataFrame(top_results).plot(kind="bar", title="Results", legend=True)
+    plt.ylabel("Popularity Count")
+    plt.title("Popularity Count by Query, grouped by used API")
+    plt.savefig(os.path.join(hists_date_dir + "\\grouped_all.png"))
 
-    #grouped HISTOGRAM (popularity in function of queries) for every used API
-    fig = pd.DataFrame(top_results).plot(kind='bar'
-                                    , title="Results"
-                                    , legend=True)
-    plt.ylabel('Popularity Count')
-    plt.title('Popularity Count by Query, grouped by used API')
-    plt.savefig(os.path.join(hists_date_dir + '\\grouped_all.png'))
-
-
-
-
-    #-------------------Converting dict to JSON-----------------
-    json_object = json.dumps(results, indent = 4)
-    #Saving the JSON file
-    with open(json_outputs + '\\'  + str(current_date) + '.json', 'w') as f:
+    # -------------------Converting dict to JSON-----------------
+    json_object = json.dumps(results, indent=4)
+    # Saving the JSON file
+    with open(json_outputs + "\\" + str(current_date) + ".json", "w") as f:
         f.write(json_object)
-
-
 
     # Execution time measurment
     end_time = time.time()
-    print('Duration: {}'.format(end_time - start_time))
+    print("Duration: {}".format(end_time - start_time))
+
 
 if __name__ == "__main__":
     main()

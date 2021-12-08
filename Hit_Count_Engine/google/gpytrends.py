@@ -1,5 +1,9 @@
 from pytrends.request import TrendReq
+
+from pytrends.exceptions import ResponseError
+from requests.exceptions import HTTPError
 from datetime import datetime, timedelta
+from random import random
 import time
 import json
 
@@ -20,7 +24,7 @@ Google Trends does filter out some types of searches, such as:
     731     C & C++: 
     732     Java: 
     733     Scripting Languages: 
-    734     Windows & .NET: 
+    734     Windowns & .NET: 
     802     Developer Jobs: 
     1227    Computer Science: 
 """
@@ -42,15 +46,36 @@ class Fetch:
         self.category = category
 
     def getTrends(self):
-        self.trend.build_payload(kw_list=[self.query], cat=self.category, timeframe="now 7-d")
         # build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="today 3-m")
         # pytrend_normal.outputbuild_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
 
-        int_over_time = self.trend.interest_over_time()
-        try:
-            return int_over_time.sum(numeric_only=True) / len(int_over_time)
-        except AttributeError:
-            return -1
+        current_delay = 2
+        max_delay = 30
+        while True:
+            try:
+                self.trend.build_payload(kw_list=[self.query], cat=self.category, timeframe="now 7-d")
+                int_over_time = self.trend.interest_over_time()
+                res = round(int_over_time.mean(numeric_only=True)[0])
+                print(res)
+                return res
+            except AttributeError:
+                return -1
+            except (HTTPError, ResponseError) as err:
+                # print(f"HTTP error occurred:\n  {err}")
+                if current_delay > max_delay:
+                    print("\tToo many retry attempts. Returning...\n")
+                    break
+                print("\tWaiting about", current_delay, "seconds before retrying.")
+                time.sleep(current_delay + round(random(), 3))
+                current_delay *= 2
+                continue
+            except IndexError:
+                print(0)
+                break
+            except Exception as err:
+                print(f"Other error occurred: {err}\n\n")
+                raise
+        return 0
 
 
 def google_process(queries, category):
@@ -60,8 +85,10 @@ def google_process(queries, category):
     #    pytrends_config = ({"cat": category, "geo": "", "timeframe": f"{week_ago} {today}"},)
 
     for query in queries:
+        print(f"{query}", end=" ")
         pytrends_obj = Fetch(query, trend, category)
         res_dict[query] = pytrends_obj.getTrends()
+        # print("OK...")
     return res_dict
 
 
