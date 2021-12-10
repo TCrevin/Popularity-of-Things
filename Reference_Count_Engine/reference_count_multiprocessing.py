@@ -73,6 +73,7 @@ def getTool(tool):
         pass
     except Exception as e:
         print("Unknown error occured when getting {}: {}".format(tool, e))
+        pass
 
 def linksFromFile():
     with open("tools.json", "r") as f:
@@ -157,65 +158,93 @@ def linkInLink(links,
 
     except error.HTTPError:
         print("Forbidden 403 at :", links)
+        pass
 
 
 
 def linkInFile(name):  # Input the source file (link-name) name and list of links associated with name
     try:
+        print("Checking ", name)
+        #print("PROCESS ID: ", os.getpid())
         work_dir = getWorkDir()
-        references_to_current_name = 0
+        references_to_current_name = 0 # FIXME: Problem with count is here. Fix.
         references_to_any_name = 0
         path = os.path.join(work_dir, "Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name))
         allhomeurls = getAllHomeUrls()                  # Sr
+        allhomeurls.remove(getHomeUrls(name)[0])
         # TODO: Make method to rip out
-        total_search_hit_count = getS(getNames(), getWorkDir()) #  Sd
+        total_search_hit_count = getS(getNames(), getWorkDir())
         template_dict = {name: [str(references_to_current_name), # St
                             str(references_to_any_name), # Sr
-                            str(total_search_hit_count.get(name)), # Sd
-                            sum(os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))]} # S
+                            str(total_search_hit_count.get(name)), # S
+                            sum(os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))]} # Sd
         template_json = json.dumps(template_dict)
         #print("NAME: ", name, ": ", os.getpid())
         no = 0
+        homeurls = getHomeUrls(name)
+        anyhomeurls = getAllHomeUrls()
+        for item in getHomeUrls(name):
+            anyhomeurls.remove(item)
+        for item in anyhomeurls:
+            if item == any(homeurls):
+                print("DUPLICATE")
     #print("SEARCH URL: ", home_url)
         for numerator, file in enumerate(os.listdir(path)):
             with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file)) as req:  # Open source file (filename is link.txt)
+                #print("Opening file {}.".format(file))
                 source = req.read()
                 links = []
                 #links = re.findall("href=[\"\'](.*?)[\"\']", source)
                 soup = BeautifulSoup(source)
-                for link in soup.find_all('a'):
+                for link in soup.find_all('a'): # Get all links from page source
                     links.append(link.get('href'))
                 #print("LINKS TO USE: ", links)
+                # Get allhomeurls. Check if links from source contain any
+                #for i in links:
 
-                for home_url in getHomeUrls(name):
-                    h = ",".join(source)
-                    if home_url in links:
+                for home_url in getHomeUrls(name): # TODO: What the fuck
+                    #print("Home url: ", home_url)
+                    #print("Checking for {} from {}".format(name, links))
+                    #h = ",".join(source)
+                    if filter(lambda element: home_url in element, links): # If any home url concerning that tool in any links from source, add
                         references_to_current_name += 1
-                        print("Hit")
+                        #print("References to current name:", references_to_current_name)
+                        #print("Hit {}: {}".format)
                     else:
                         #print("No hit.")
                         no += 1
-                if any(homeurl in h for homeurl in allhomeurls):
-                    references_to_any_name += 1
+                #for _ in getAllHomeUrls():
+                #for home_url in getAllHomeUrls():
+                   # print("Home_url: ", home_url)
+                if filter(lambda element: any(allhomeurls) in element, links):
+                #if any(tool_home_url in allhomeurls for tool_home_url in links): # If any home_url in allhomeurls in links from source, add
+                        #print("AA")
+                        references_to_any_name += 1
+                else:
+                     pass
 
-                for home_url in allhomeurls:
+                    #print("References to any name:", references_to_any_name)
+
+                #for home_url in allhomeurls:
                     #print("Checking for {} in {}".format(home_url, name))
                     # print("Checking home URL: ", home_url)
                     #links = re.findall("href=[\"\'](.*?)[\"\']", source)
 
-                    if home_url in links:
+                #    if home_url in links:
                     #    print("Gottem")
-                        references_to_any_name += 1
-                else:
-                    pass
+                #        references_to_any_name += 1
+                #        print("References to any name:", references_to_any_name)
+                #else:
+                    #pass
 
         temp_path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt")
     #if any(home_url in h for home_url in allhomeurls):
     #    references_to_any_name += 1
-    #print("ALL HOME URLS: ", allhomeurls)
+    #print("ALL HOME URLS {}: {}".format(allhomeurls)
     #print("Done checking Home URLs.")
         print("TRUE COUNT FOR {}: {}".format(name, references_to_current_name)) # TODO: Redo using for in range.
         print("TRUE ALL COUNT FOR {}: {}".format(name, references_to_any_name))
+        print("TRUE FILES IN FOLDER COUNT FOR {}: {}".format(name, sum(os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))))
         #if os.path.isfile(temp_path):
         #    print("AAAAAAAAAAAAAAA")
         #    with open(temp_path, "r+") as f: # TODO: Write Sd, Sr, St and S as a .json
@@ -238,13 +267,16 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
             json.dump(data, f)
             f.close()
     except KeyError:
-        print(traceback.format_exc())
-        print(name)
+        #print(traceback.format_exc())
+        #print(name)
+        pass
     except FileNotFoundError:
-        print("Could not find {}. Skipping..".format(name))
+        #print("Could not find {}. Skipping..".format(name))
+        pass
     except Exception as e:
-        print(e)
-        print(traceback.format_exc())
+        #print(e)
+        #print(traceback.format_exc())
+        pass
 
 
 
@@ -258,22 +290,25 @@ def filterAndAssemble(): # FIXME: All results undefined for whatever reason
     for numerator, file in enumerate(os.listdir(filepath)):
         try:
             with open(os.path.join(filepath, file), "r") as f:
-                #print("Loading tool ", file)
+                print("Loading tool ", file)
                 data = json.load(f)
                 tool = file.replace("_results.txt", "")
+                print(tool, " : ", data)
                 St = data[tool][0]
+                print(type(St))
                 Sr = data[tool][1]
-                Sd = data[tool][2]
-                S  = data[tool][3]
+                S = data[tool][2]
+                Sd  = data[tool][3]
                 if (float(St)/float(Sr)>=0.5) and (float(Sr)/float(Sd)>=0.2):
                     print("DING")
                     pn = str(math.log(math.log((int(St)/int(Sd))*int(S))))
                     results_dict.update({tool: pn})
                 else:
-                    #print("DONG")
+                    print("DONG")
                     pn = "Undefined"
                     results_dict.update({tool: pn})
         except ZeroDivisionError:
+            print("FUCK")
             #print("Setting {} as undefined..".format(file))
             pn = "Undefined"
             results_dict.update({tool: pn})
@@ -286,8 +321,9 @@ def filterAndAssemble(): # FIXME: All results undefined for whatever reason
     with open("name_search_results.txt", "w") as f:
         print("RESULTS: ", results_dict)
         #results_json = json.dumps(results_dict)
-        json.dump(results_dict, f)
+        json.dump(results_dict, f, indent=4)
         f.close()
+    return results_dict
 
 
 
@@ -350,7 +386,7 @@ def getAllHomeUrls():
             except KeyError:
                 pass
             except Exception as e:
-                print("Something went wrong in allHomeUrls(): {}".format(e))
+                #print("Something went wrong in allHomeUrls(): {}".format(e))
                 pass
 
         for sublist in tool_list:
@@ -438,17 +474,25 @@ def getHomeUrls(tool):
             except KeyError:
                 #print("Didn't find {}. Skipping..".format(i))
                 continue
+        #print("Tool: {}\t Links: {}".format(tool, bb))
         return bb
     except Exception as e:
-        print("Something went from getting {} home urls".format(tool))
-        print(e)
+        #print("Something went from getting {} home urls".format(tool))
+        #print(e)
+        pass
 
 def execute(tool):
     print("Starting")
-    #with ProcessPoolExecutor(max_workers=1) as executor:  # Task is CPU bound not I/O bound, use processes.
-    with ProcessPoolExecutor(max_workers=(os.cpu_count()*5)) as executor: # WARNING: DO NOT SET MULTIPLIER OVER 20
+    print("Amount of items: ", len(tool))
+    time.sleep(3)
+    with ProcessPoolExecutor(max_workers=20) as executor:  # Task is CPU bound not I/O bound, use processes.
+    #with ProcessPoolExecutor(max_workers=(os.cpu_count()*5)) as executor: # WARNING: DO NOT SET MULTIPLIER OVER 20
         for item in tool:
             executor.submit(returner2, item)
+
+
+    #for item in tool:
+    #    returner2(item)
 
 
 def execute2(input_link, filename):
@@ -501,6 +545,9 @@ def main():
     execute(getTools())
     print("Total execution time: ", time.time() - t1)
 
-main()
+#main()
+linkInFile("wireshark")
 #print(getHomeUrls("wireshark"))
-filterAndAssemble()
+#filterAndAssemble()
+#for item in aa:
+    #print(item)
