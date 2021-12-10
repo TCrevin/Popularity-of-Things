@@ -19,11 +19,11 @@ reddit = praw.Reddit(client_id="9aC2iDzQQi04w-q1cPmjUw",
                                   check_for_async=False
                                 )
 
-globalTags = {"program":3, "code":3, "comput":3, "develop":3, "dev":3, 
+globalTags = {"program":3, "code":3, "comput":3, "develop":3, "dev":3,
             "tech":2, "software":2, "language":2, "framework":2, "engineer":2,
             #"python":2, "java":2, "c++":2, "cplusplus":2, "c#":2, "csharp":2, "php":2, "fortran":2, "javascript":2, "golang":2,
-            "gam":1, "web":1, "work":1, 
-            "meme":-2, 
+            "gam":1, "web":1, "work":1,
+            "meme":-2,
             "d.c":-3, "b.c":-3, "dank":-3, "celsius":-3, "fahrenheit":-3, "°":-3,
             "nfl":-4, "basket":-4, "ball":-4, "football":-4, "tv":-4,
             "usb":-5}
@@ -151,14 +151,14 @@ class Fetch:
                 if self.query in submission.title.lower():
                     subTitleCount = submission.title.lower().count(self.query)
                 elif self.translatedQuery in submission.title.lower():
-                    subTitleCount = submission.title.lower().count(self.translatedQuery)
+                    subTitleCount = submission.title.lower().count(self.query)
                 
                 #query counting in SUB TEXT
                 subTextCount=0
                 if self.query in submission.selftext.lower():
                     subTextCount = submission.selftext.lower().count(self.query)
                 elif self.translatedQuery in submission.selftext.lower():
-                    subTextCount = submission.selftext.lower().count(self.translatedQuery)
+                    subTextCount = submission.selftext.lower().count(self.query)
                 
                 totalScore += (subTitleCount+subTextCount)*subPopularity#*subComCount
                 
@@ -168,7 +168,7 @@ class Fetch:
                         if self.query in comment.body.lower():
                             totalScore += comment.body.lower().count(self.query)*comment.score
                         elif self.translatedQuery in comment.body.lower():
-                            totalScore += comment.body.lower().count(self.translatedQuery)*comment.score
+                            totalScore += comment.body.lower().count(self.query)*comment.score
                         
                 #to know the max value of hasTag fct between sub title and selftext
                 titles[submission.title]=max(hasTag(submission.title, self.tags),hasTag(submission.selftext, self.tags))
