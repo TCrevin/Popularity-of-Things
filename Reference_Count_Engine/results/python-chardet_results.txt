@@ -1,0 +1,1 @@
+{"python-chardet": ["0", "0", "None", 0]}

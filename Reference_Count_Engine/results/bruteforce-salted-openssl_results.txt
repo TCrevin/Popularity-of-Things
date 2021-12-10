@@ -1,0 +1,1 @@
+{"bruteforce-salted-openssl": ["15", "29", "10400", 42]}

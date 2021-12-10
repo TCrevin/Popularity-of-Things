@@ -2,16 +2,17 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from tqdm import tqdm
 import time
 from urllib import request, error
+from bs4 import BeautifulSoup, SoupStrainer
 import re
 import requests
+import math
 import traceback
 from itertools import repeat
 import json
 import os
 
-# TODO: Add methods to filter out results
+# TODO: FIXME at filterAndAssemble (all results undefined)
 # TODO: Check if directories exist, if not, create
-# TODO: Get all tools into a single .json in Reference_Count_Engine root
 # TODO: Make script to build directories to docker output folder Do by 8.12 -Sami
 # TODO: Assemble all together on 9.12
 yaml_path = "~"  # TODO: Replace with Docker filesystem
@@ -21,6 +22,8 @@ work_dir = "/home/toni/scripts/Popularity_of_Things/"
 
 def getWorkDir():
     return "/home/toni/scripts/Popularity_of_Things/"
+
+
 def getNames():  # Read files from tools.yaml that was converted to .json
     with open("tools.json", "r") as f:
         tool_dict = {}
@@ -39,6 +42,20 @@ def getNames():  # Read files from tools.yaml that was converted to .json
                 tool_dict[tool["tool"]["nick"]] = tool["tool"]["urls"]
 
         return tool_dict
+
+def getTools():
+    with open("tools.json", "r") as f:
+        tool_list = []
+        data = json.load(f)
+        tools = data["tools"]
+        for tool in tools:
+            try:
+                tool_list.append(tool["tool"]["nick"])
+            except KeyError:
+                #print("No home URLs for {}. Skipping..".format(tool))
+                pass
+    return tool_list
+
 
 def getTool(tool):
     try:
@@ -143,66 +160,135 @@ def linkInLink(links,
 
 
 
-def linkInFile(name, # TODO: Do filtering HERE
-               search_url):  # Input the source file (link-name) name and list of links associated with name
-    work_dir = getWorkDir()
-    path = os.path.join(work_dir, "Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name))
-    allhomeurls = getAllHomeUrls()
-    references_to_current_name = 0              # St
-    references_to_any_name = 0                  # Sr
-    total_search_hit_count = getS(getNames(), getWorkDir()) #  Sd # FIXME Currently not working
-    template_dict = {name: [str(references_to_current_name),
-                            str(references_to_any_name),
-                            str(total_search_hit_count.get(name)),
-                            sum(os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))]}
-    template_json = json.dumps(template_dict)
-    print("NAME: ", name, ": ", os.getpid())
-    no = 0
-    for numerator, file in enumerate(os.listdir(path)):
-        try:
-            with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file)) as req:  # Open source file (filename is link.txt)
-                source = req.readlines()
-                h = ",".join(source)
-                if search(h, search_url):
-                    references_to_current_name += 1
-                else:
-                    no+=1
-        except KeyError:
-            print(traceback.format_exc())
-            print(name)
-        except Exception as e:
-            print("Error {} occurred".format(e))
-            print(traceback.format_exc())
-    temp_path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt")
-    if any(home_url in h for home_url in allhomeurls):
-        references_to_any_name += 1
-    else:
-        print("No hits.")
-        references_to_any_name = 0
-
+def linkInFile(name):  # Input the source file (link-name) name and list of links associated with name
     try:
-        if os.path.isfile(temp_path):
-            with open(temp_path, "r+") as f: # TODO: Write Sd, Sr, St and S as a .json
-                data = json.load(f)
-                m = json.loads(data)
-                read_count = int(m[name][0])
-                f.seek(0) # seek file
-                f.truncate() # clear
-                updated_count = read_count + references_to_current_name
-                m[name][0] = str(updated_count)
-                m[name][1] = str(references_to_any_name)
-                json.dump(data, f)
-                f.close()
-        else:
-            with open(temp_path, "w") as f:
-                data = json.loads(template_json)
-                data[name][0] = str(references_to_current_name)
-                data[name][1] = str(references_to_any_name)
-                json.dump(data, f)
-                f.close()
+        work_dir = getWorkDir()
+        references_to_current_name = 0
+        references_to_any_name = 0
+        path = os.path.join(work_dir, "Popularity-of-Things/Reference_Count_Engine/pages/{}/".format(name))
+        allhomeurls = getAllHomeUrls()                  # Sr
+        # TODO: Make method to rip out
+        total_search_hit_count = getS(getNames(), getWorkDir()) #  Sd
+        template_dict = {name: [str(references_to_current_name), # St
+                            str(references_to_any_name), # Sr
+                            str(total_search_hit_count.get(name)), # Sd
+                            sum(os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))]} # S
+        template_json = json.dumps(template_dict)
+        #print("NAME: ", name, ": ", os.getpid())
+        no = 0
+    #print("SEARCH URL: ", home_url)
+        for numerator, file in enumerate(os.listdir(path)):
+            with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file)) as req:  # Open source file (filename is link.txt)
+                source = req.read()
+                links = []
+                #links = re.findall("href=[\"\'](.*?)[\"\']", source)
+                soup = BeautifulSoup(source)
+                for link in soup.find_all('a'):
+                    links.append(link.get('href'))
+                #print("LINKS TO USE: ", links)
+
+                for home_url in getHomeUrls(name):
+                    h = ",".join(source)
+                    if home_url in links:
+                        references_to_current_name += 1
+                        print("Hit")
+                    else:
+                        #print("No hit.")
+                        no += 1
+                if any(homeurl in h for homeurl in allhomeurls):
+                    references_to_any_name += 1
+
+                for home_url in allhomeurls:
+                    #print("Checking for {} in {}".format(home_url, name))
+                    # print("Checking home URL: ", home_url)
+                    #links = re.findall("href=[\"\'](.*?)[\"\']", source)
+
+                    if home_url in links:
+                    #    print("Gottem")
+                        references_to_any_name += 1
+                else:
+                    pass
+
+        temp_path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt")
+    #if any(home_url in h for home_url in allhomeurls):
+    #    references_to_any_name += 1
+    #print("ALL HOME URLS: ", allhomeurls)
+    #print("Done checking Home URLs.")
+        print("TRUE COUNT FOR {}: {}".format(name, references_to_current_name)) # TODO: Redo using for in range.
+        print("TRUE ALL COUNT FOR {}: {}".format(name, references_to_any_name))
+        #if os.path.isfile(temp_path):
+        #    print("AAAAAAAAAAAAAAA")
+        #    with open(temp_path, "r+") as f: # TODO: Write Sd, Sr, St and S as a .json
+        ##        data = json.load(f)
+         #       m = json.loads(data)
+         #       read_count = int(m[name][0])
+         #       f.seek(0) # seek file
+         ##       f.truncate() # clear
+          #      updated_count = read_count + references_to_current_name
+          #      m[name][0] = str(updated_count)
+          #      m[name][1] = str(references_to_any_name)
+          #      json.dump(data, f)
+          #      f.close()
+        #else:
+          #  print("BBBBBBBBBBBBBBBB")
+        with open(temp_path, "w") as f:
+            data = json.loads(template_json)
+            data[name][0] = str(references_to_current_name)
+            data[name][1] = str(references_to_any_name)
+            json.dump(data, f)
+            f.close()
     except KeyError:
         print(traceback.format_exc())
         print(name)
+    except FileNotFoundError:
+        print("Could not find {}. Skipping..".format(name))
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+
+
+
+def filterAndAssemble(): # FIXME: All results undefined for whatever reason
+    work_dir = getWorkDir()
+    #print("WORK DIR: ", work_dir)
+    results_dir = 'Popularity-of-Things/Reference_Count_Engine/results'
+    filepath = os.path.join(work_dir, results_dir)
+    #print("FILEPATH: ", filepath)
+    results_dict = {}
+    for numerator, file in enumerate(os.listdir(filepath)):
+        try:
+            with open(os.path.join(filepath, file), "r") as f:
+                #print("Loading tool ", file)
+                data = json.load(f)
+                tool = file.replace("_results.txt", "")
+                St = data[tool][0]
+                Sr = data[tool][1]
+                Sd = data[tool][2]
+                S  = data[tool][3]
+                if (float(St)/float(Sr)>=0.5) and (float(Sr)/float(Sd)>=0.2):
+                    print("DING")
+                    pn = str(math.log(math.log((int(St)/int(Sd))*int(S))))
+                    results_dict.update({tool: pn})
+                else:
+                    #print("DONG")
+                    pn = "Undefined"
+                    results_dict.update({tool: pn})
+        except ZeroDivisionError:
+            #print("Setting {} as undefined..".format(file))
+            pn = "Undefined"
+            results_dict.update({tool: pn})
+            pass
+        except Exception as e:
+            print("An unknown error occured at {}: {}".format(file, traceback.format_exc()))
+            pass
+
+    #print("Done filtering. Assembling..")
+    with open("name_search_results.txt", "w") as f:
+        print("RESULTS: ", results_dict)
+        #results_json = json.dumps(results_dict)
+        json.dump(results_dict, f)
+        f.close()
+
 
 
 def linkList(master_links):
@@ -237,7 +323,7 @@ def getSources(tool_name, link):  # TODO: Reformat into Docker format
                 print("{} exists.. Skipping".format(formatted))  #
             elif not os.path.isfile(path):
                 with open(path, 'w') as f:
-                    html = requests.get(link, 'html.parser',
+                    html = requests.get(link, 'html.parser', # TODO: Pycurl here.
                                         timeout=5)  # Decreasing timeout will decrease execution # Need to preprocess links to exclude .pdf, .exe etc.
                     f.write(html.text)
             else:
@@ -317,10 +403,10 @@ def returner(link, name):
         exit()
 
 
-def returner2(filename, home_urls):  # Input one link and then the name and search_urls list from tools.json
-    print("Checking: ", filename)
+def returner2(filename):  # Input one link and then the name and search_urls list from tools.json
+    #print("Checking: ", filename)
     try:  # TODO: Get S, St, Sr and Sd here (see page 3, formula 1)
-        linkInFile(filename, home_urls)  # TODO: Rip
+        linkInFile(filename)  # TODO: Rip
     except KeyboardInterrupt:
         print("Exiting program..")
         exit()
@@ -332,10 +418,38 @@ def tempDict(): # Returns dictionary
         aa[filename] = linksFromGoogleFiles(filename)
     return aa
 
-def execute(filename, home_urls):
+def getHomeUrls(tool):
+    #aa = {}
+    bb = []
+    try:
+        with open("tools.json", "r") as f:
+            tool_list = []
+            flat_tool_list = []
+            data = json.load(f)
+        for numerator, i in enumerate(data["tools"]):
+            try:
+                if i["tool"]["nick"] == tool:
+                    #aa.update({i["tool"]['nick']:i["tool"]["urls"]})
+                    for tool in i["tool"]["urls"]:
+                        bb.append(tool)
+                else:
+                    pass
+
+            except KeyError:
+                #print("Didn't find {}. Skipping..".format(i))
+                continue
+        return bb
+    except Exception as e:
+        print("Something went from getting {} home urls".format(tool))
+        print(e)
+
+def execute(tool):
     print("Starting")
-    with ProcessPoolExecutor(max_workers=80) as executor:  # Task is CPU bound not I/O bound, use processes.
-        (executor.map(returner2, repeat(filename), home_urls))
+    #with ProcessPoolExecutor(max_workers=1) as executor:  # Task is CPU bound not I/O bound, use processes.
+    with ProcessPoolExecutor(max_workers=(os.cpu_count()*5)) as executor: # WARNING: DO NOT SET MULTIPLIER OVER 20
+        for item in tool:
+            executor.submit(returner2, item)
+
 
 def execute2(input_link, filename):
     list_of_results = []
@@ -376,11 +490,17 @@ def getS(names, work_dir): # Argument getNames(), returns a dictionary with tool
         s_dict[format(tool)] = getGoogleHits(tool, work_dir)
     return s_dict
 
-t1 = time.time()
+
 def main():
-    deleteResults() # FIXME: FileNotFoundError
-    for tool, homeurls in getNames().items():
-        execute(tool, homeurls)
+    t1 = time.time()
+    deleteResults()
+    #tools = getTools()
+    #print(getNames().items())
+#    for tool in tools:
+#        print("{}".format(tool))
+    execute(getTools())
     print("Total execution time: ", time.time() - t1)
 
 main()
+#print(getHomeUrls("wireshark"))
+filterAndAssemble()

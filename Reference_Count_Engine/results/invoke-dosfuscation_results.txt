@@ -1,0 +1,1 @@
+{"invoke-dosfuscation": ["12", "34", "1800", 39]}
