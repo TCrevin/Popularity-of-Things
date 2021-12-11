@@ -23,7 +23,7 @@ import os
 import requests, json
 from requests.models import HTTPError
 import yaml
-from random import random
+from random import randint
 from time import sleep, time
 from datetime import datetime
 
@@ -32,6 +32,7 @@ key = "AIzaSyBDCfGzExKZN_hLv1XYCuB4K_iZWdvpfR0"
 cx = "a400502691c2c4c3c"
 # Yaml DB path
 db_loc = "../../yaml_db/tools.yaml"
+results_path = "search_results/"
 
 exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
 
@@ -67,7 +68,9 @@ def readDB(path):
 
 
 def saveResults(nick, result):
-    save_path = "search_results/" + date + "/" + nick + ".json"
+    # TODO: save to specific directory
+    # save_path = "search_results/" + date + "/" + nick + ".json"
+    save_path = results_path + nick + ".json"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, "w") as outfile:
         json.dump(result, outfile, sort_keys=True, indent=4)
@@ -109,21 +112,22 @@ def getPageItems(query, page):
     url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q={query}"
     results = []
 
-    current_delay = 2
-    max_delay = 30
+    current_delay = 1
+    max_delay = 32
 
     while True:
         try:
             response = requests.request("GET", url)
             response.raise_for_status()
         except HTTPError as http_err:
-            # TODO: Throw a timeout if stuck in HTTPError for more than ~600(?) seconds
             print(f"HTTP error occurred: {http_err}")
             if current_delay > max_delay:
                 print("Too many retry attempts. Returning...")
                 return None
             print("Waiting about", current_delay, "seconds before retrying.")
-            sleep(current_delay + round(random(), 3))
+            delay = current_delay + randint(0, 1000) / 1000.0
+            # sleep(current_delay + round(random(), 3))
+            sleep(delay)
             current_delay *= 2
             continue
         except Exception as err:

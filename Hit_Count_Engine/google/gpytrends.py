@@ -2,10 +2,12 @@ from pytrends.request import TrendReq
 
 from pytrends.exceptions import ResponseError
 from requests.exceptions import HTTPError
-from datetime import datetime, timedelta
-from random import random
-import time
-import json
+
+# from datetime import datetime, timedelta
+from random import randint
+from time import sleep
+
+# import json
 
 # import matplotlib.pyplot as plt
 """
@@ -30,10 +32,10 @@ Google Trends does filter out some types of searches, such as:
 """
 
 
-now = datetime.today()
-today = now.strftime("%Y-%m-%d")
-old = now - timedelta(days=7)
-week_ago = old.strftime("%Y-%m-%d")
+# now = datetime.today()
+# today = now.strftime("%Y-%m-%d")
+# old = now - timedelta(days=7)
+# week_ago = old.strftime("%Y-%m-%d")
 
 
 class Fetch:
@@ -49,8 +51,8 @@ class Fetch:
         # build_payload(kw_list=["apple", "windows", "linux"], cat="303", timeframe="today 3-m")
         # pytrend_normal.outputbuild_payload(kw_list=["volatility"], cat="314", timeframe="today 12-m")
 
-        current_delay = 2
-        max_delay = 30
+        current_delay = 1
+        max_delay = 32
         while True:
             try:
                 self.trend.build_payload(kw_list=[self.query], cat=self.category, timeframe="now 7-d")
@@ -66,7 +68,9 @@ class Fetch:
                     print("\tToo many retry attempts. Returning...\n")
                     break
                 print("\tWaiting about", current_delay, "seconds before retrying.")
-                time.sleep(current_delay + round(random(), 3))
+                delay = current_delay + randint(0, 1000) / 1000.0
+                # time.sleep(current_delay + round(random(), 3))
+                sleep(delay)
                 current_delay *= 2
                 continue
             except IndexError:
