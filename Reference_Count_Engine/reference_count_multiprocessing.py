@@ -29,6 +29,15 @@ def getWorkDir(): # TODO: Docker
     #return "/home/toni/scripts/Popularity_of_Things/"
     return "/var/lib/output/"
 
+def createDirs():
+    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things"))
+    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine"))
+    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
+    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/google_search_results"))
+    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results"))
+
+
+
 def getNames():  # Read files from tools.yaml that was converted to .json # TODO: DOCKER
     with open("tools.json", "r") as f:
         tool_dict = {}
@@ -541,6 +550,7 @@ def choose():
 
 def main():
     try:
+        createDirs()
         if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/")):
             os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
         t1 = time.time()
@@ -569,8 +579,8 @@ def main():
     #filterAndAssemble()
         #print("Total execution time: ", time.time() - t1) # TODO: Remove
 
-#main()
-print(getWorkDir())
+main()
+#print(getWorkDir())
 #filterAndAssemble()
 #getSources("beef.json", )
 #linkInFile("beef")
