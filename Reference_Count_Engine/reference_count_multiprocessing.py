@@ -1,6 +1,8 @@
+import http.client
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from datetime import date
-
+import gsearch
+import OpenSSL
 from tqdm import tqdm
 import time
 from urllib import request, error
@@ -32,12 +34,13 @@ def getNames():  # Read files from tools.yaml that was converted to .json # TODO
         tool_dict = {}
         data = json.load(f)
         tools = data["tools"]
+        path = os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine")
+        #print("PATH: ", path)
         for tool in tools:
             try:
                 tool_dict[tool["tool"]["nick"]] = tool["tool"]["urls"]
-                os.mkdir(
-                    '/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}'.format(
-                        tool["tool"]["nick"]))
+                os.mkdir(os.path.join(path, 'pages/{}'.format(
+                        tool["tool"]["nick"])))
             except KeyError:
                 #print("No home URLs for {}. Skipping..".format(tool))
                 pass
@@ -207,6 +210,15 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
                 for item in allhomeurls:
                     if item in links:
                         allhomeurls.remove(item)
+
+                #S1 = set(getHomeUrls(name))
+                #print("S1: ", S1)
+                #S2 = set(links)
+                #print("S2: ", S2)
+                #references_to_current_name = S1.intersection(S2)
+
+                #else:
+                #    no+=1
                 for item in getHomeUrls(name):
                     for i, element in enumerate(links):
                         if element == None:
@@ -216,17 +228,22 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
                             break
                         else:
                             no += 1
+                    break
                 for item in allhomeurls:
                     for i, element in enumerate(links):
                         if element == None:
                             pass
                         elif item in element:
-                            #print("Found {} in {}.".format(item, element))
                             references_to_any_name += 1
-                            break
+                            #break
+                    #break
 
-        temp_path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt") # TODO: DOCKER
-
+        temp_path = os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt")) # TODO: DOCKER
+        print("TRUE COUNT FOR {}: {}".format(name, references_to_current_name))  # TODO: Redo using for in range.
+        #print(references_to_current_name)
+        print("TRUE ALL COUNT FOR {}: {}".format(name, references_to_any_name))
+        print("TRUE FILES IN FOLDER COUNT FOR {}: {}".format(name, sum(
+            os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))))
         with open(temp_path, "w") as f:
             data = json.loads(template_json)
             data[name][0] = str(references_to_current_name)
@@ -305,20 +322,21 @@ def linkList(master_links):
 def getSources(tool_name, link):  # TODO: Docker
     formatted = tool_name.replace(".json", "")
     link_strip = link.replace("/", "\\")  # Swap / to \
-    path = "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(
-        formatted, link_strip)
+    path = os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(
+        formatted, link_strip))
+    #print("PATH: ", path)
     try:
-        if os.path.isdir(
-                "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}".format(
-                        formatted)):
+        if os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/{}".format(formatted))):
             if os.path.isfile(path):  # TODO: Timestamp/duplicate checking here
                 print("{} exists.. Skipping".format(formatted))  #
             elif not os.path.isfile(path):
+
                 with open(path, 'w') as f:
                     html = requests.get(link, 'html.parser', # TODO Insert Pycurl here.
                                         timeout=5)  # Decreasing timeout will decrease execution # Need to preprocess links to exclude .pdf, .exe etc.
                     f.write(html.text)
             else:
+                #print("DDD")
                 raise FileNotFoundError
         else:
             print("DEBUG Tool has no URLs to compare it to, skipping")
@@ -328,6 +346,19 @@ def getSources(tool_name, link):  # TODO: Docker
         pass
     except requests.exceptions.ReadTimeout:
         print("Timeout at {}".format(link))
+        pass
+    except OpenSSL.SSL.Error:
+        print(traceback.format_exc())
+        pass
+    except http.client.RemoteDisconnected:
+        print(traceback.format_exc())
+        pass
+    except requests.exceptions.ConnectionError:
+        print(traceback.format_exc())
+        pass
+    except Exception as e:
+        #print(e)
+        print(traceback.format_exc())
         pass
 
 def getAllHomeUrls():
@@ -362,27 +393,29 @@ def getAllHomeUrls():
 def linksFromGoogleFiles(filename): # TODO: Docker
     list_of_links = []
     exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
-    with open(os.path.join( # TODO: Replace with work_dir for docker
-            "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Hit_Count_Engine/google/search_results/30"
-            "-11-2021", # TODO: Date based google searches outdated, reformat the source in gsearch.py
+    with open(os.path.join(getWorkDir(),
+            "Popularity-of-Things/Reference_Count_Engine/google_search_results/", # TODO: Date based google searches outdated, reformat the source in gsearch.py
             filename)) as f:
         for line in json.load(f):
             if line.startswith("https://") and not line.endswith(exclude) or line.startswith(
                     "http://") and not line.endswith(exclude):
                 list_of_links.append(line)
             else:
-                print("ENDED with exclude: ", line)
+                #print("ENDED with exclude: ", line)
                 pass
     return list_of_links
 
 
 def queryNames():  # TODO: Docker
-    names = os.listdir(
-        "/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Hit_Count_Engine/google/search_results/30-11-2021")
+    names = os.listdir(os.path.join(getWorkDir(),
+            "Popularity-of-Things/Reference_Count_Engine/google_search_results/"))
     files = []
     for name in names:
-        name.replace(".json", "")
-        files.append(name)
+        if name.endswith(".json"):
+            name.replace(".json", "")
+            files.append(name)
+        else:
+            pass
     return files
 
 
@@ -414,6 +447,7 @@ def returner2(filename):  # Input one link and then the name and search_urls lis
 def tempDict(): # Returns dictionary
     aa = {}
     for filename in queryNames():  # TODO change to in range, so can take in arguments
+        #print("AA: ", filename)
         aa[filename] = linksFromGoogleFiles(filename)
     return aa
 
@@ -449,7 +483,7 @@ def execute(tool):
     print("Starting")
     print("Amount of items: ", len(tool))
     time.sleep(3)
-    with ProcessPoolExecutor(max_workers=20) as executor:  # Task is CPU bound not I/O bound, use processes.
+    with ProcessPoolExecutor(max_workers=10) as executor:  # Task is CPU bound not I/O bound, use processes.
     #with ProcessPoolExecutor(max_workers=(os.cpu_count()*5)) as executor: # WARNING: DO NOT SET MULTIPLIER OVER 20
         for item in tool:
             executor.submit(returner2, item)
@@ -479,12 +513,15 @@ def deleteResults():
         os.remove(os.path.join(filepath, file))
 
 def getPages(): # Download pages to appropriate directories
-    aa = tempDict() #TODO: Initial path as argument to function
-    for filename in queryNames():
-        aa[filename] = linksFromGoogleFiles(filename)
-    with ThreadPoolExecutor() as executor:
-        for filename, links in aa.items():
-            list(tqdm(executor.map(getSources, repeat(filename), links), total=len(links)))
+    try:
+        aa = tempDict() #TODO: Initial path as argument to function
+        for filename in queryNames():
+            aa[filename] = linksFromGoogleFiles(filename)
+        with ThreadPoolExecutor() as executor:
+            for filename, links in aa.items():
+                list(tqdm(executor.map(getSources, repeat(filename), links), total=len(links)))
+    except Exception:
+        pass
 
 def getS(names, work_dir): # Argument getNames(), returns a dictionary with tool: count
     s_dict = {}
@@ -503,20 +540,39 @@ def choose():
 
 
 def main():
-    t1 = time.time()
-    dr = choose()
-    if dr == 'N':
-        execute(getTools())
-        filterAndAssemble()
-    if dr == 'Y':
-        # TODO: Insert Custom Search API getting new links here
+    try:
+        if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/")):
+            os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
+        t1 = time.time()
+        dr = choose()
+        gsearch.customSearch()
+        getNames()
         getPages()
         execute(getTools())
         filterAndAssemble()
-
-    deleteResults()
-    execute(getTools())
-    filterAndAssemble()
-    print("Total execution time: ", time.time() - t1) # TODO: Remove
+        print("Total execution time: ", time.time() - t1)  # TODO: Remove
+    except OpenSSL.SSL.Error:
+        print(traceback.format_exc())
+        pass
+    except http.client.RemoteDisconnected:
+        print(traceback.format_exc())
+        pass
+    except requests.exceptions.ConnectionError:
+        print(traceback.format_exc())
+        pass
+    except Exception as e:
+        #print(e)
+        print(traceback.format_exc())
+        pass
+    #deleteResults()
+    #execute(getTools())
+    #filterAndAssemble()
+        #print("Total execution time: ", time.time() - t1) # TODO: Remove
 
 main()
+#filterAndAssemble()
+#getSources("beef.json", )
+#linkInFile("beef")
+#linkInFile("wireshark")
+#linkInFile("nmap")
+#gsearch.customSearch()
