@@ -26,8 +26,8 @@ work_dir = "/home/toni/scripts/Popularity_of_Things/"
 
 
 def getWorkDir(): # TODO: Docker
-    return "/home/toni/scripts/Popularity_of_Things/"
-
+    #return "/home/toni/scripts/Popularity_of_Things/"
+    return "/var/lib/output/"
 
 def getNames():  # Read files from tools.yaml that was converted to .json # TODO: DOCKER
     with open("tools.json", "r") as f:
@@ -569,7 +569,8 @@ def main():
     #filterAndAssemble()
         #print("Total execution time: ", time.time() - t1) # TODO: Remove
 
-main()
+#main()
+print(getWorkDir())
 #filterAndAssemble()
 #getSources("beef.json", )
 #linkInFile("beef")
