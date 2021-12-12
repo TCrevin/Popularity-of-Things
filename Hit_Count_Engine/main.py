@@ -163,13 +163,12 @@ def main():
 
     # Directories
     Hit_Count_Engine, in_out_results, graphs, hists, json_outputs, hists_date_dir = getDirectories(current_date)
-
     # ----------------------python results---------------------
     # TODO change queries to real queries from JSON
 
     # Test input, to comment
-    queries = ["python", "java", "golang", "javascript"]
-    qualifying_terms = ["computer", "program", "code", "develop"]
+    #queries = ["python", "java", "golang", "javascript"]
+    #qualifying_terms = ["computer", "program", "code", "develop"]
 
     # Threading ?
     # results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))

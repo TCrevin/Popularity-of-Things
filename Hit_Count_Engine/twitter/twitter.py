@@ -8,7 +8,7 @@ def twitter_process(a_list, qualifying):
 ## GENERAL PROCESS #############################################################
 	i = 1
 	for original_query in a_list:
-		if i%275==0:
+		if i%100==0:
 			print("The program is pausing to avoid twitter restrictions of 300 items/15min")
 			time.sleep(15*60)
 	## CLEAN SPECIAL CHARACTERS  ##
