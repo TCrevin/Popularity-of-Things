@@ -32,8 +32,8 @@ key = "AIzaSyBDCfGzExKZN_hLv1XYCuB4K_iZWdvpfR0"
 cx = "a400502691c2c4c3c"
 # Yaml DB path
 db_loc = "tools.yaml"
-results_path = "google_search_results/"
-
+results_path = "Popularity-of-Things/Reference_Count_Engine/google_search_results/"
+global response
 exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
 
 now = datetime.now()
@@ -54,8 +54,8 @@ date = now.strftime("%d-%m-%Y")
 #       name: "3proxy"
 # """
 def getWorkDir(): # TODO: Docker
-    #return "/home/toni/scripts/Popularity_of_Things/"
-    return "/var/lib/output/"
+    return "/home/toni/scripts/Popularity_of_Things/"
+    #return "/var/lib/output/"
 
 def readDB(path):
     """Reads the DB and returns it as dict
@@ -72,9 +72,9 @@ def readDB(path):
 def saveResults(nick, result):
     # TODO: save to specific directory
     # save_path = "search_results/" + date + "/" + nick + ".json"
-    save_path = os.path.join(results_path, nick+".json")
+    save_path = os.path.join(getWorkDir(), results_path, nick+".json")
     print("SAVE PATH: ", save_path)
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    #os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, "w") as outfile:
         json.dump(result, outfile, sort_keys=True, indent=4)
 
@@ -133,9 +133,20 @@ def getPageItems(query, page):
             sleep(delay)
             current_delay *= 2
             continue
+
+        except requests.exceptions.Timeout:
+            print("Timeout occurred")
         except Exception as err:
-            print(f"Other error occurred: {err}\n\n")
-            raise
+            print(f"HTTP error occurred: {err}")
+            if current_delay > max_delay:
+                print("Too many retry attempts. Returning...")
+                return None
+            print("Waiting about", current_delay, "seconds before retrying.")
+            delay = current_delay + randint(0, 1000) / 1000.0
+            # sleep(current_delay + round(random(), 3))
+            sleep(delay)
+            current_delay *= 2
+            continue
         res_text = json.loads(response.text)
         break
     try:
@@ -157,8 +168,7 @@ def customSearch():
     The function prints the progress in terminal.
     """
     #starting_point = False
-    starting_point = "wireshark"
-    starting_point = "xortool"
+    starting_point = "bro"
 
     print("Starting the custom search from", end=" ")
     if starting_point:
