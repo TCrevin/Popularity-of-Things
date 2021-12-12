@@ -54,8 +54,8 @@ date = now.strftime("%d-%m-%Y")
 #       name: "3proxy"
 # """
 def getWorkDir(): # TODO: Docker
-    return "/home/toni/scripts/Popularity_of_Things/"
-    #return "/var/lib/output/"
+    #return "/home/toni/scripts/Popularity_of_Things/"
+    return "/var/lib/output/"
 
 def readDB(path):
     """Reads the DB and returns it as dict
