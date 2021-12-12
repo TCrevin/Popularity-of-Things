@@ -168,8 +168,8 @@ def main():
     # TODO change queries to real queries from JSON
 
     # Test input, to comment
-    # queries = ["python", "java", "golang", "javascript"]
-    # qualifying_terms = ["comput", "program", "code", "develop"]
+    queries = ["python", "java", "golang", "javascript"]
+    qualifying_terms = ["computer", "program", "code", "develop"]
 
     # Threading ?
     # results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
