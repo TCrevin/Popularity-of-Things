@@ -53,7 +53,9 @@ date = now.strftime("%d-%m-%Y")
 #       nick: "3proxy"
 #       name: "3proxy"
 # """
-
+def getWorkDir(): # TODO: Docker
+    #return "/home/toni/scripts/Popularity_of_Things/"
+    return "/var/lib/output/"
 
 def readDB(path):
     """Reads the DB and returns it as dict
@@ -70,7 +72,8 @@ def readDB(path):
 def saveResults(nick, result):
     # TODO: save to specific directory
     # save_path = "search_results/" + date + "/" + nick + ".json"
-    save_path = results_path + nick + ".json"
+    save_path = os.path.join(results_path, nick+".json")
+    print("SAVE PATH: ", save_path)
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, "w") as outfile:
         json.dump(result, outfile, sort_keys=True, indent=4)
@@ -155,6 +158,7 @@ def customSearch():
     """
     #starting_point = False
     starting_point = "wireshark"
+    starting_point = "xortool"
 
     print("Starting the custom search from", end=" ")
     if starting_point:

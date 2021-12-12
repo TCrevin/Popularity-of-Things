@@ -30,12 +30,16 @@ def getWorkDir(): # TODO: Docker
     return "/var/lib/output/"
 
 def createDirs():
-    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things"))
-    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine"))
-    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
-    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/google_search_results"))
-    os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results"))
-
+    if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things")):
+        os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things"))
+    if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine")):
+        os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine"))
+    if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages")):
+        os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
+    if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/google_search_results")):
+        os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/google_search_results"))
+    if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results")):
+        os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results"))
 
 
 def getNames():  # Read files from tools.yaml that was converted to .json # TODO: DOCKER
@@ -104,7 +108,7 @@ def linksFromFile():
 
 
 def getGoogleHits(tool, work_dir):
-    temp_path = os.path.join(work_dir, "Popularity-of-Things/Reference_Count_Engine/google_search_results/")
+    temp_path = os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/google_search_results")
     tooljson = tool + ".json"
     try:
         with open(os.path.join(temp_path, tooljson)) as f:
@@ -206,7 +210,7 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
         no = 0
     #print("SEARCH URL: ", home_url)
         for numerator, file in enumerate(os.listdir(path)):
-            with open("/home/toni/scripts/Popularity_of_Things/Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file)) as req:  # Open source file (filename is link.txt)
+            with open(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/{}/{}".format(name, file))) as req:  # Open source file (filename is link.txt)
                 #print("Opening file {}.".format(file))
                 source = req.read()
                 links = []
@@ -220,14 +224,6 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
                     if item in links:
                         allhomeurls.remove(item)
 
-                #S1 = set(getHomeUrls(name))
-                #print("S1: ", S1)
-                #S2 = set(links)
-                #print("S2: ", S2)
-                #references_to_current_name = S1.intersection(S2)
-
-                #else:
-                #    no+=1
                 for item in getHomeUrls(name):
                     for i, element in enumerate(links):
                         if element == None:
@@ -279,6 +275,7 @@ def filterAndAssemble(): # FIXME: All results undefined for whatever reason
     for numerator, file in enumerate(os.listdir(filepath)):
         try:
             with open(os.path.join(filepath, file), "r") as f:
+                print(os.path.join(filepath, file))
                 data = json.load(f)
                 tool = file.replace("_results.txt", "")
                 St = data[tool][0]
@@ -295,6 +292,8 @@ def filterAndAssemble(): # FIXME: All results undefined for whatever reason
             pn = "Undefined"
             results_dict.update({tool: pn})
             pass
+        except ValueError:
+            print("Value error at {}: ", file)
         except Exception as e:
             print("An unknown error occured at {}: {}".format(file, traceback.format_exc()))
             pass
@@ -351,19 +350,19 @@ def getSources(tool_name, link):  # TODO: Docker
             print("DEBUG Tool has no URLs to compare it to, skipping")
             pass
     except FileNotFoundError as e:
-        print("An unknown FileNotFoundError triggered: ", e)
+        #print("An unknown FileNotFoundError triggered: ", e)
         pass
     except requests.exceptions.ReadTimeout:
-        print("Timeout at {}".format(link))
+        #print("Timeout at {}".format(link))
         pass
     except OpenSSL.SSL.Error:
-        print(traceback.format_exc())
+        #print(traceback.format_exc())
         pass
     except http.client.RemoteDisconnected:
-        print(traceback.format_exc())
+        #print(traceback.format_exc())
         pass
     except requests.exceptions.ConnectionError:
-        print(traceback.format_exc())
+        #print(traceback.format_exc())
         pass
     except Exception as e:
         #print(e)
@@ -536,6 +535,7 @@ def getS(names, work_dir): # Argument getNames(), returns a dictionary with tool
     s_dict = {}
     for numerator, tool in enumerate(names):
         s_dict[format(tool)] = getGoogleHits(tool, work_dir)
+    #print("AA: ", s_dict)
     return s_dict
 
 def choose():
@@ -551,10 +551,11 @@ def choose():
 def main():
     try:
         createDirs()
-        if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/")):
-            os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
+        #if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/")):
+            #os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
         t1 = time.time()
-        dr = choose()
+        #dr = choose()
+        deleteResults()
         gsearch.customSearch()
         getNames()
         getPages()
@@ -570,6 +571,9 @@ def main():
     except requests.exceptions.ConnectionError:
         print(traceback.format_exc())
         pass
+    #except OpenSSL.SSL.WantReadError:
+    #    print(traceback.format_exc())
+    #    pass
     except Exception as e:
         #print(e)
         print(traceback.format_exc())
