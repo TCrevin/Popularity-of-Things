@@ -244,11 +244,11 @@ def linkInFile(name):  # Input the source file (link-name) name and list of link
                     #break
 
         temp_path = os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/results/{}".format(name+"_results.txt")) # TODO: DOCKER
-        print("TRUE COUNT FOR {}: {}".format(name, references_to_current_name))  # TODO: Redo using for in range.
+        #print("TRUE COUNT FOR {}: {}".format(name, references_to_current_name))  # TODO: Redo using for in range.
         #print(references_to_current_name)
-        print("TRUE ALL COUNT FOR {}: {}".format(name, references_to_any_name))
-        print("TRUE FILES IN FOLDER COUNT FOR {}: {}".format(name, sum(
-            os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))))
+        #print("TRUE ALL COUNT FOR {}: {}".format(name, references_to_any_name))
+        #print("TRUE FILES IN FOLDER COUNT FOR {}: {}".format(name, sum(
+        #    os.path.isfile(os.path.join(path, f)) for f in os.listdir(path))))
         with open(temp_path, "w") as f:
             data = json.loads(template_json)
             data[name][0] = str(references_to_current_name)
@@ -366,7 +366,7 @@ def getSources(tool_name, link):  # TODO: Docker
         pass
     except Exception as e:
         #print(e)
-        print(traceback.format_exc())
+        #print(traceback.format_exc())
         pass
 
 def getAllHomeUrls():
@@ -553,7 +553,7 @@ def main():
         createDirs()
         #if not os.path.isdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages/")):
             #os.mkdir(os.path.join(getWorkDir(), "Popularity-of-Things/Reference_Count_Engine/pages"))
-        t1 = time.time()
+        #t1 = time.time()
         #dr = choose()
         deleteResults()
         gsearch.customSearch()
@@ -561,7 +561,7 @@ def main():
         getPages()
         execute(getTools())
         filterAndAssemble()
-        print("Total execution time: ", time.time() - t1)  # TODO: Remove
+        #print("Total execution time: ", time.time() - t1)  # TODO: Remove
     except OpenSSL.SSL.Error:
         print(traceback.format_exc())
         pass
