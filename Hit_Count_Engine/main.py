@@ -16,7 +16,7 @@ import pandas as pd
 import datetime
 import time
 
-processes = [google_process, reddit_process]
+processes = [twitter_process, google_process, reddit_process]
 
 
 def JSONinputToPython(filename):
@@ -167,8 +167,8 @@ def main():
     # TODO change queries to real queries from JSON
 
     # Test input, to comment
-    queries = ["python", "java", "golang", "javascript"]
-    qualifying_terms = ["computer", "program", "code", "develop"]
+    #queries = ["python", "java", "golang", "javascript"]
+    #qualifying_terms = ["computer", "program", "code", "develop"]
 
     # Threading ?
     # results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
