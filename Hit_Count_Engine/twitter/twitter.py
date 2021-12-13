@@ -6,14 +6,15 @@ def twitter_process(a_list, qualifying):
 	res_dict = {}
 	null = ''
 ## GENERAL PROCESS #############################################################
-	i = 1
+	a = 1
 	for original_query in a_list:
-		i += 1
-		print(str(i))
-		if i>=250:
-			print("The program is pausing to avoid twitter restrictions of 100 items/15min")
-			time.sleep(15*60)
-			i=1
+		a = a + 1
+		print(a)
+		if a>=10:
+			print("The program is pausing to avoid twitter restrictions of 300 items/15min")
+			print("Wait 15 minutes")
+			time.sleep(5)
+			a=1
 	## CLEAN SPECIAL CHARACTERS  ##
 		temp_query = ''.join(char for char in original_query if char.isalnum())
 		if temp_query == (null) or temp_query == ' ':
@@ -43,7 +44,7 @@ def twitter_process(a_list, qualifying):
 	
 def main():
 	print("hello1")
-	twitter_process()
+#	twitter_process()
 	
 if __name__ == "__main__":
     main()
