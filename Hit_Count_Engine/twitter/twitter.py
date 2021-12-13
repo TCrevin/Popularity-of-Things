@@ -8,10 +8,12 @@ def twitter_process(a_list, qualifying):
 ## GENERAL PROCESS #############################################################
 	i = 1
 	for original_query in a_list:
+		i += 1
 		print(str(i))
-		if i%100==0:
+		if i>=250:
 			print("The program is pausing to avoid twitter restrictions of 100 items/15min")
 			time.sleep(15*60)
+			i=1
 	## CLEAN SPECIAL CHARACTERS  ##
 		temp_query = ''.join(char for char in original_query if char.isalnum())
 		if temp_query == (null) or temp_query == ' ':
@@ -35,7 +37,6 @@ def twitter_process(a_list, qualifying):
 		fetch = Fetch(temp_query)
 		new_count = fetch.getCount()
 		res_dict.update({original_query: new_count})
-		i += 1
 	return res_dict
 		
 ## MAIN #######################
