@@ -16,7 +16,7 @@ import pandas as pd
 import datetime
 import time
 
-processes = [google_process, twitter_process, reddit_process]
+processes = [google_process, reddit_process]
 
 
 def JSONinputToPython(filename):
@@ -167,8 +167,8 @@ def main():
     # TODO change queries to real queries from JSON
 
     # Test input, to comment
-    #queries = ["python", "java", "golang", "javascript"]
-    #qualifying_terms = ["computer", "program", "code", "develop"]
+    queries = ["python", "java", "golang", "javascript"]
+    qualifying_terms = ["computer", "program", "code", "develop"]
 
     # Threading ?
     # results = threading.Thread(target=processAPIprograms, args=(queries, qualifying_terms, True))
@@ -202,7 +202,8 @@ def main():
 
     # HISTOGRAMS for each API
     # browsing APIs (reddit, twitter, ...)
-    for API, API_res in top_results.items():
+    for API,  API_res in results.items():
+        API_res = dict(sorted(API_res.items(), key=itemgetter(1), reverse=True)[:N])
         # plotting a histogram (popularity in function of queries) for a particular API
         fig, ax = plt.subplots()
 
