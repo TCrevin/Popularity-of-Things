@@ -34,12 +34,12 @@ cx = "a400502691c2c4c3c"
 db_loc = "../../yaml_db/tools.yaml"
 results_path = "search_results/"
 
-exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
+# exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
 
 now = datetime.now()
 date = now.strftime("%d-%m-%Y")
 
-# Test Yaml DB, to be removed
+# Test Yaml DB, to be removedut Queues is that they work re
 # test_yaml = """
 # tools:
 #   - tool:
@@ -68,7 +68,6 @@ def readDB(path):
 
 
 def saveResults(nick, result):
-    # TODO: save to specific directory
     # save_path = "search_results/" + date + "/" + nick + ".json"
     save_path = results_path + nick + ".json"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -109,7 +108,7 @@ def getPageItems(query, page):
     """
 
     start = 10 * page + 1
-    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q={query}"
+    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q=\"{query}\""
     results = []
 
     current_delay = 1
@@ -117,6 +116,7 @@ def getPageItems(query, page):
 
     while True:
         try:
+            # FIXME: request timeout hang or something... Possible bug
             response = requests.request("GET", url)
             response.raise_for_status()
         except HTTPError as http_err:
@@ -154,7 +154,7 @@ def customSearch():
     The function prints the progress in terminal.
     """
     # starting_point = False
-    starting_point = "ghidra"
+    starting_point = "john"
 
     print("Starting the custom search from", end=" ")
     if starting_point:

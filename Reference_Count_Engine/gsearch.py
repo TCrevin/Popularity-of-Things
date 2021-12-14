@@ -112,7 +112,7 @@ def getPageItems(query, page):
     """
 
     start = 10 * page + 1
-    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q={query}"
+    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q=\"{query}\""
     results = []
 
     current_delay = 1
