@@ -10,10 +10,10 @@ def twitter_process(a_list, qualifying):
 	for original_query in a_list:
 		a = a + 1
 		print(a)
-		if a>=10:
+		if a>=275:
 			print("The program is pausing to avoid twitter restrictions of 300 items/15min")
 			print("Wait 15 minutes")
-			time.sleep(5)
+			time.sleep(15*60)
 			a=1
 	## CLEAN SPECIAL CHARACTERS  ##
 		temp_query = ''.join(char for char in original_query if char.isalnum())
