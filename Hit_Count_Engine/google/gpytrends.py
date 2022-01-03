@@ -19,6 +19,7 @@ Google Trends does filter out some types of searches, such as:
 
 
 """
+    0       All Categories
     31      Programming: 
     314     Computer Security
     705     Security Products & Services
@@ -58,7 +59,7 @@ class Fetch:
                 self.trend.build_payload(kw_list=[self.query], cat=self.category, timeframe="now 7-d")
                 int_over_time = self.trend.interest_over_time()
                 res = round(int_over_time.mean(numeric_only=True)[0])
-                print(res)
+                # print(res)
                 return res
             except AttributeError:
                 return -1

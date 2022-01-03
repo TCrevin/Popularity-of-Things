@@ -19,6 +19,9 @@ This script requires 'requests' package to be installed within the Python enviro
 The API key and Search engine ID are to be acquired separately and keep them private.
 """
 
+from queue import Queue
+from threading import Thread
+
 import os
 import requests, json
 from requests.models import HTTPError
@@ -31,8 +34,9 @@ from datetime import datetime
 key = "AIzaSyBDCfGzExKZN_hLv1XYCuB4K_iZWdvpfR0"
 cx = "a400502691c2c4c3c"
 # Yaml DB path
-db_loc = "../../yaml_db/tools.yaml"
-results_path = "search_results"
+db_loc = "db/tools_cropped.yaml"
+results_path = "search_results/"
+
 
 # exclude = (".exe", ".tar.xz", ".zip", ".pdf", ".epub", ".dmg")
 
@@ -67,9 +71,9 @@ def readDB(path):
     return yamldb
 
 
-def saveResults(nick, result, res_path=results_path):
+def saveResults(nick, result):
     # save_path = "search_results/" + date + "/" + nick + ".json"
-    save_path = os.path.join(res_path, nick + ".json")
+    save_path = results_path + nick + ".json"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     with open(save_path, "w") as outfile:
         json.dump(result, outfile, sort_keys=True, indent=4)
@@ -85,8 +89,8 @@ def getName(item):
     """
     name = None
     try:
-        name = item["tool"]["name"]
-        include = item["tool"]["include"]
+        name = item["name"]
+        include = item["include"]
     except KeyError:
         return name
     if include:
@@ -108,7 +112,7 @@ def getPageItems(query, page):
     """
 
     start = 10 * page + 1
-    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q=\"{query}\""
+    url = f"https://www.googleapis.com/customsearch/v1?key={key}&cx={cx}&start={start}&q={query}"
     results = []
 
     current_delay = 1
@@ -147,31 +151,21 @@ def getPageItems(query, page):
     return results
 
 
-def customSearch():
-    """The function
-
-    This starts the search and calls function accordingly.
-    The function prints the progress in terminal.
-    """
-    starting_point = False
-    # starting_point = "john"
-
-    print("Starting the custom search from", end=" ")
-    if starting_point:
-        print(f"{starting_point}...\n")
-    else:
-        print(f"the beginning...\n")
-    tools = readDB(db_loc)
-    for tool in tools["tools"]:
+def doSearch(q):
+    while True:
+        ts = time()
+        tool = q.get()
+    # for tool in tools["tools"]:
         # Gets nick for saving purposes
-        nick = tool["tool"]["nick"]
+        print(tool)
+        nick = tool["nick"]
         # Skip finished queries
-        if starting_point:
-            if starting_point != nick:
-                continue
-            else:
-                # Caught the place where last stopped
-                starting_point = False
+        # if starting_point:
+        #     if starting_point != nick:
+        #         continue
+        #     else:
+        #         # Caught the place where last stopped
+        #         starting_point = False
         print(f"{nick} -", end=" ")
         name = getName(tool)
         if not name:
@@ -196,7 +190,44 @@ def customSearch():
         # Save results to json file
         saveResults(nick, urls)
         print("- Saved!\n")
-    print("\n------------------------\n", "Search Completed!", sep="")
+        q.task_done()
+
+        print("Quota limit per minute per user reached.\n - Wait some time before continuing.")
+        ts_delta = round(time() - ts)
+        print(f"Sleeping for {ts_delta} seconds")
+        sleep(61 - ts_delta)
+
+    # print("\n------------------------\n", "Search Completed!", sep="")
+
+
+def customSearch():
+    """The function
+
+    This starts the search and calls function accordingly.
+    The function prints the progress in terminal.
+    """
+    starting_point = False
+    # starting_point = "ghidra"
+
+    print("Starting the custom search from", end=" ")
+    if starting_point:
+        print(f"{starting_point}...\n")
+    else:
+        print(f"the beginning...\n")
+    tools = readDB(db_loc)
+
+    q = Queue(maxsize=0)
+    num_threads = 10
+
+    for i in range(num_threads):
+        worker = Thread(target=doSearch, args=(q,))
+        worker.setDaemon(True)
+        worker.start()
+
+    for tool in tools["tools"]:
+        q.put(tool["tool"])
+
+    q.join()
 
 
 def main():
@@ -209,3 +240,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
