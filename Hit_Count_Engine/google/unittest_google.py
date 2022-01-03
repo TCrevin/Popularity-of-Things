@@ -52,7 +52,7 @@ class TestSearch(unittest.TestCase):
         nick = tools["tools"][1]['tool']["nick"]
         name = getName(tools["tools"][1])
         self.assertEqual(name, "Wireshark", "Correct name returned")
-        # Not testing query to the API due to key disabled
+        # Not testing query to the API due to key being disabled
         # res = getPageItems(name, 0)
         dummy_res = [
             "7810000",
